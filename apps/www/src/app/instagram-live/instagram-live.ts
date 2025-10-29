@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LiveConfigService } from '../services/live-config.service';
 
 interface Profile {
   id: number;
@@ -26,12 +27,19 @@ export class InstagramLive implements OnInit, OnDestroy {
   comments: Array<{ username: string; text: string; profileId?: number; initial: string; gradient: string }> = [];
   hearts: Array<{ id: number; emoji: string; animClass: string; right: string }> = [];
 
+  // User configuration
+  username = 'your_username';
+  profilePicture: string | null = null;
+  isVerified = false;
+  userInitial = 'Y';
+
   private viewerInterval?: ReturnType<typeof setInterval>;
   private commentInterval?: ReturnType<typeof setInterval>;
   private heartScheduler?: ReturnType<typeof setTimeout>;
   private currentCommentIndex = 0;
   private currentProfileIndex = 0;
   private heartIdCounter = 0;
+  private initialViewerCount = 25000;
 
   profiles: Profile[] = [
     {id: 1, username: "orangemouse205", name: "Matilda Thompson"},
@@ -115,9 +123,20 @@ export class InstagramLive implements OnInit, OnDestroy {
     'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private liveConfigService: LiveConfigService
+  ) {}
 
   async ngOnInit() {
+    // Load configuration
+    const config = this.liveConfigService.getConfig();
+    this.username = config.username;
+    this.profilePicture = config.profilePicture;
+    this.isVerified = config.isVerified;
+    this.initialViewerCount = config.initialViewerCount;
+    this.userInitial = config.username.charAt(0).toUpperCase();
+
     await this.initCamera();
   }
 
@@ -155,14 +174,24 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   startViewerSimulation() {
-    this.viewerCount = Math.floor(Math.random() * 50000) + 10000;
+    // Start with the configured initial viewer count
+    this.viewerCount = this.initialViewerCount;
     this.updateViewerCount();
 
+    // Calculate the fluctuation range (±10% of initial count)
+    const fluctuationRange = Math.floor(this.initialViewerCount * 0.1);
+    const minViewers = this.initialViewerCount - fluctuationRange;
+    const maxViewers = this.initialViewerCount + fluctuationRange;
+
     this.viewerInterval = setInterval(() => {
+      // Random change within the ±10% range
+      const maxChange = Math.floor(fluctuationRange * 0.02); // Small incremental changes
       const change = Math.random() > 0.5 ?
-        Math.floor(Math.random() * 12) + 1 :
-        -Math.floor(Math.random() * 8);
-      this.viewerCount = Math.max(5, this.viewerCount + change);
+        Math.floor(Math.random() * maxChange) + 1 :
+        -Math.floor(Math.random() * maxChange);
+
+      // Apply change but keep within the ±10% bounds
+      this.viewerCount = Math.max(minViewers, Math.min(maxViewers, this.viewerCount + change));
       this.updateViewerCount();
     }, 1500 + Math.random() * 2000);
   }
@@ -305,7 +334,7 @@ export class InstagramLive implements OnInit, OnDestroy {
   onCommentInput(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.value.trim()) {
-      this.addComment('your_username', input.value);
+      this.addComment(this.username, input.value);
       input.value = '';
     }
   }

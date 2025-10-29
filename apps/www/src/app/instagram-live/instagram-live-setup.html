@@ -1,0 +1,109 @@
+<div class="setup-container">
+  <div class="setup-card">
+    <h1 class="setup-title">
+      <span class="ig-gradient-text">Instagram Live</span> Setup
+    </h1>
+
+    <div class="setup-content">
+      <!-- Profile Picture Section -->
+      <div class="form-section">
+        <label class="section-label">Profile Picture</label>
+
+        <div class="profile-picture-area">
+          @if (showCamera) {
+            <div class="camera-container">
+              <video #video autoplay playsinline class="camera-preview"></video>
+              <div class="camera-controls">
+                <button type="button" (click)="capturePhoto()" class="btn btn-primary">
+                  📸 Capture
+                </button>
+                <button type="button" (click)="stopCamera()" class="btn btn-secondary">
+                  ✕ Cancel
+                </button>
+              </div>
+            </div>
+          } @else if (profilePicture) {
+            <div class="profile-preview">
+              <img [src]="profilePicture" alt="Profile" class="preview-image">
+              <button type="button" (click)="removePhoto()" class="btn-remove">✕</button>
+            </div>
+          } @else {
+            <div class="profile-placeholder">
+              <div class="placeholder-icon">👤</div>
+              <p class="placeholder-text">No photo selected</p>
+            </div>
+          }
+        </div>
+
+        @if (!showCamera) {
+          <div class="photo-buttons">
+            <button type="button" (click)="selectFile()" class="btn btn-outline">
+              📁 Choose File
+            </button>
+            <button type="button" (click)="startCamera()" class="btn btn-outline">
+              📷 Take Selfie
+            </button>
+          </div>
+        }
+
+        <input #fileInput type="file" accept="image/*" (change)="onFileSelect($event)" style="display: none">
+        <canvas #canvas style="display: none"></canvas>
+      </div>
+
+      <!-- Username Section -->
+      <div class="form-section">
+        <label class="section-label" for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          class="input-field"
+          placeholder="Enter your username"
+          maxlength="30"
+        >
+      </div>
+
+      <!-- Verified Toggle -->
+      <div class="form-section">
+        <label class="toggle-row">
+          <span class="section-label">Verified Account</span>
+          <div class="toggle-switch">
+            <input
+              type="checkbox"
+              [(ngModel)]="isVerified"
+              id="verified-toggle"
+              class="toggle-input"
+            >
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+        <p class="help-text">Show the blue verified checkmark next to your name</p>
+      </div>
+
+      <!-- Viewer Count Section -->
+      <div class="form-section">
+        <label class="section-label" for="viewerCount">Initial Viewer Count</label>
+        <input
+          type="number"
+          id="viewerCount"
+          [(ngModel)]="viewerCount"
+          class="input-field"
+          placeholder="e.g., 25000"
+          min="0"
+          step="100"
+        >
+        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button type="button" (click)="cancel()" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button type="button" (click)="startLive()" class="btn btn-primary btn-large">
+        🔴 Start Live
+      </button>
+    </div>
+  </div>
+</div>
