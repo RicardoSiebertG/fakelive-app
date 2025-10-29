@@ -1,0 +1,145 @@
+<div id="video-container">
+  <video #cameraFeed id="camera-feed" autoplay playsinline muted></video>
+</div>
+
+@if (loading) {
+  <div class="loading">Starting Live Video...</div>
+}
+
+<!-- Top Header -->
+<div class="top-header">
+  <div class="header-left">
+    <div class="profile-avatar">Y</div>
+    <div class="username-section">
+      <span class="username-text">your_username</span>
+      <span class="verified-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22.957,1L8.348,14.999L1.044,8"/>
+        </svg>
+      </span>
+      <span class="dropdown-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20,8L12,16L4,8"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge">LIVE</div>
+    <div class="viewer-count">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12,5C4.143,5 1,12.072 1,12.072C1,12.072 4.143,19.143 12,19.143C19.857,19.143 23,12.072 23,12.072C23,12.072 19.857,5 12,5Z"/>
+        <path d="M12.001,16.001C14.17,16.001 15.929,14.242 15.929,12.072C15.929,9.902 14.17,8.144 12.001,8.144C9.831,8.144 8.072,9.902 8.072,12.072C8.072,14.242 9.831,16.001 12.001,16.001Z"/>
+      </svg>
+      <span>{{ displayViewerCount }}</span>
+    </div>
+    <button class="close-btn" (click)="endLive()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20,4L4,20"/>
+        <path d="M20,20L4,4"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Comments -->
+<div class="comments-section">
+  @for (comment of comments; track $index) {
+    <div class="comment-item">
+      @if (comment.profileId) {
+        <img [src]="'assets/profiles/profile-' + comment.profileId + '.jpg'" class="comment-avatar" [alt]="comment.username">
+      } @else {
+        <div class="comment-avatar" [style.background]="comment.gradient">{{ comment.initial }}</div>
+      }
+      <div class="comment-content">
+        <div class="comment-username">{{ comment.username }}</div>
+        <div class="comment-text">{{ comment.text }}</div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Hearts -->
+<div class="hearts-container">
+  @for (heart of hearts; track heart.id) {
+    <div class="heart" [class]="heart.animClass" [style.right]="heart.right">{{ heart.emoji }}</div>
+  }
+</div>
+
+<!-- Right Side Controls -->
+<div class="right-controls">
+  <button class="control-icon" (click)="toggleAudio()" title="Microphone">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11.999,2H11.999C13.036,2 14.032,2.393 14.766,3.091C15.499,3.79 15.911,4.738 15.911,5.726V11.689C15.911,12.677 15.499,13.625 14.766,14.324C14.032,15.023 13.036,15.415 11.999,15.415H11.999C11.485,15.415 10.976,15.319 10.501,15.132C10.027,14.944 9.595,14.67 9.232,14.324C8.869,13.978 8.58,13.567 8.384,13.115C8.187,12.663 8.086,12.178 8.086,11.689V5.726C8.086,4.738 8.498,3.79 9.232,3.091C9.966,2.393 10.961,2 11.999,2V2Z"/>
+      <path d="M12,18.396V22H8.5H15.5"/>
+      <path d="M5,11.333V12.434C5.193,14.074 6.013,15.588 7.304,16.688C8.596,17.788 10.267,18.396 12,18.396C13.733,18.396 15.404,17.788 16.695,16.688C17.987,15.588 18.807,14.074 19,12.434V11.333"/>
+    </svg>
+  </button>
+  <button class="control-icon" (click)="toggleCamera()" title="Toggle Camera">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.482,9.12L21.999,7.2V17.44L17.482,15.52"/>
+      <path d="M17.484,7C17.5,5 16.5,4 14.5,4H5C3,4 2,5 2,7V17C2,19 2.999,20 5,20L14.5,20C16.5,20 17.5,19 17.48,17C17.46,15 17.473,8.324 17.484,7Z"/>
+    </svg>
+  </button>
+  <button class="control-icon" (click)="flipCamera()" title="Flip Camera">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.352,14.892L21.442,14.892L21.442,18.983"/>
+      <path d="M21.443,14.893L17.971,18.364C16.713,19.623 15.109,20.48 13.363,20.827C11.617,21.174 9.808,20.996 8.163,20.315C6.846,19.769 5.681,18.92 4.762,17.843"/>
+      <path d="M6.092,9.108H2.001V5.017"/>
+      <path d="M1.999,9.107L5.47,5.636C6.729,4.377 8.333,3.52 10.078,3.173C11.824,2.826 13.634,3.004 15.278,3.685C16.533,4.205 17.649,5 18.547,6.005"/>
+    </svg>
+  </button>
+  <button class="control-icon" (click)="toggleEffects()" title="Effects">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15.052,3.531C14.099,3.187 13.071,3 12,3C7.029,3 3,7.029 3,12C3,16.971 7.029,21 12,21C16.971,21 21,16.971 21,12C21,11.018 20.843,10.072 20.552,9.188" stroke-width="2"/>
+      <path d="M17.063,9.188V5.813" stroke-width="1"/>
+      <path d="M15.375,7.5H18.75" stroke-width="1"/>
+      <path d="M20.438,3V5.25" stroke-width="1"/>
+      <path d="M19.313,4.125H21.563" stroke-width="1"/>
+      <circle cx="8.5" cy="11.313" r="1" fill="white"/>
+      <circle cx="15.5" cy="11.313" r="1" fill="white"/>
+      <path d="M14.488,16.313C13.75,16.802 12.885,17.063 12,17.063C11.115,17.063 10.249,16.802 9.512,16.313" stroke-width="2"/>
+    </svg>
+  </button>
+</div>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <input
+    type="text"
+    class="comment-input-box"
+    placeholder="Comment"
+    autocomplete="off"
+    (keypress.enter)="onCommentInput($event)"
+  >
+  <button class="bottom-icon" (click)="addGuest()" title="Add Guest">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.482,9.12L21.999,7.2V17.44L17.482,15.52"/>
+      <path d="M5,4L14.484,4A3,3 0,0 1,17.484 7L17.484,17A3,3 0,0 1,14.484 20L5,20A3,3 0,0 1,2 17L2,7A3,3 0,0 1,5 4z"/>
+      <path d="M5.5,11.82L14.14,11.82"/>
+      <path d="M9.82,7.5V16.14"/>
+    </svg>
+  </button>
+  <button class="bottom-icon" (click)="inviteUser()" title="Invite">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="13.366" cy="11.842" r="2.526"/>
+      <path d="M8.314,21C8.314,19.421 9.578,17.526 10.841,17.526C12.34,17.526 11.815,17.526 13.367,17.526C14.919,17.526 14.234,17.527 15.893,17.526C17.157,17.526 18.42,19.421 18.42,21"/>
+      <path d="M2,16.263C2,15.115 3.026,13.737 4.053,13.737C5.271,13.737 4.844,13.737 6.105,13.737C6.421,13.737 6.737,13.737 7.368,13.737"/>
+      <circle cx="6.105" cy="9" r="2.211"/>
+      <path d="M16.527,5.526L21.58,5.526"/>
+      <path d="M19.053,3V8.053"/>
+    </svg>
+  </button>
+  <button class="bottom-icon" (click)="showQuestions()" title="Questions">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19.74,16.592C20.859,14.706 21.251,12.477 20.842,10.322C20.434,8.168 19.253,6.237 17.521,4.892C15.789,3.547 13.626,2.881 11.438,3.018C9.25,3.155 7.186,4.086 5.636,5.636C4.086,7.186 3.155,9.25 3.018,11.438C2.881,13.626 3.547,15.789 4.892,17.521C6.237,19.253 8.168,20.434 10.322,20.842C12.477,21.251 14.706,20.859 16.592,19.74L16.592,19.74L19.701,20.629C19.83,20.666 19.966,20.667 20.096,20.634C20.225,20.6 20.343,20.533 20.438,20.438C20.533,20.343 20.6,20.225 20.634,20.096C20.667,19.966 20.666,19.83 20.629,19.701L19.74,16.592L19.74,16.592Z"/>
+      <circle cx="12.001" cy="16.5" r="1.039" fill="white"/>
+      <path d="M12.001,13.385V12C12.48,12 12.949,11.858 13.347,11.592C13.746,11.325 14.056,10.947 14.24,10.504C14.423,10.061 14.471,9.574 14.378,9.104C14.284,8.634 14.054,8.203 13.715,7.864C13.376,7.525 12.944,7.294 12.474,7.2C12.004,7.107 11.517,7.155 11.074,7.338C10.631,7.522 10.253,7.832 9.986,8.231C9.72,8.629 9.578,9.098 9.578,9.577"/>
+    </svg>
+  </button>
+  <button class="bottom-icon" (click)="shareStream()" title="Share">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.795,3L21.979,3.048C22.12,3.049 22.258,3.087 22.38,3.158C22.501,3.23 22.601,3.333 22.669,3.456C22.738,3.58 22.772,3.719 22.769,3.86C22.766,4.001 22.725,4.139 22.651,4.259L12.573,20.622C12.488,20.76 12.363,20.869 12.215,20.933C12.067,20.998 11.903,21.016 11.745,20.985C11.586,20.954 11.441,20.875 11.329,20.759C11.217,20.643 11.142,20.496 11.116,20.336L9.582,11.059C9.562,10.939 9.516,10.827 9.447,10.729C9.411,10.679 9.37,10.633 9.323,10.592L2.27,4.392C2.148,4.285 2.063,4.144 2.023,3.987C1.985,3.83 1.994,3.665 2.051,3.514C2.109,3.362 2.21,3.232 2.343,3.14C2.476,3.049 2.634,3 2.795,3Z"/>
+    </svg>
+  </button>
+</div>
