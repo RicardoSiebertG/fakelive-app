@@ -182,13 +182,17 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: 16px;
+  /* Gradient mask to fade out comments at top */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40px, black 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 40px, black 100%);
 }
 
 .comment-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  animation: slideInComment 0.3s ease-out;
+  animation: fadeInComment 0.4s ease-out;
+  transition: transform 0.3s ease-out;
 }
 
 .comment-avatar {
@@ -230,14 +234,12 @@
   line-height: 18px;
 }
 
-@keyframes slideInComment {
-  from {
+@keyframes fadeInComment {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

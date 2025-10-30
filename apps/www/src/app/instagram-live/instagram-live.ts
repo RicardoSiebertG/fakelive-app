@@ -129,13 +129,26 @@ export class InstagramLive implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    // Load configuration
-    const config = this.liveConfigService.getConfig();
-    this.username = config.username;
-    this.profilePicture = config.profilePicture;
-    this.isVerified = config.isVerified;
-    this.initialViewerCount = config.initialViewerCount;
-    this.userInitial = config.username.charAt(0).toUpperCase();
+    // Load configuration from IndexedDB or memory
+    this.liveConfigService.setCurrentPlatform('instagram');
+
+    try {
+      // Try to load from IndexedDB first
+      const config = await this.liveConfigService.loadConfig('instagram');
+      this.username = config.username;
+      this.profilePicture = config.profilePicture;
+      this.isVerified = config.isVerified;
+      this.initialViewerCount = config.initialViewerCount;
+      this.userInitial = config.username.charAt(0).toUpperCase();
+    } catch (error) {
+      // Fallback to memory config
+      const config = this.liveConfigService.getConfig();
+      this.username = config.username;
+      this.profilePicture = config.profilePicture;
+      this.isVerified = config.isVerified;
+      this.initialViewerCount = config.initialViewerCount;
+      this.userInitial = config.username.charAt(0).toUpperCase();
+    }
 
     await this.initCamera();
   }

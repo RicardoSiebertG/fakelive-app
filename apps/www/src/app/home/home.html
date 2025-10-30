@@ -1,56 +1,148 @@
-<div class="container">
-  <header class="header">
-    <div class="logo">
-      <span class="logo-icon">🎥</span>
-      <h1 class="logo-text">FakeLive</h1>
+<div class="page">
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-text">Fake<span class="live-badge">LIVE</span>.app</span>
+      </div>
     </div>
-    <p class="tagline">Professional Live Stream Simulators</p>
-  </header>
+  </nav>
 
-  <main class="main">
-    <div class="intro">
-      <h2 class="title">Choose Your Platform</h2>
-      <p class="subtitle">Select a platform to start your fake live streaming experience</p>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Live Stream Simulation Platform
+      </div>
+      <h1 class="hero-title">
+        Practice Your Live Streams<br>
+        <span class="gradient-text">Before Going Live</span>
+      </h1>
+      <p class="hero-description">
+        Perfect your content with realistic live stream simulations. Test your setup, rehearse your presentation, and build confidence—all in a safe, private environment.
+      </p>
+      <div class="hero-cta">
+        <a [routerLink]="fakeLives[0].route" class="btn-primary">
+          Get Started
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
     </div>
+  </section>
 
-    <div class="platforms-grid">
-      @for (live of fakeLives; track live.route) {
-        <a [routerLink]="live.route" class="platform-card">
-          <div class="card-gradient" [style.background]="live.gradient"></div>
-          <div class="card-content">
-            <div class="card-icon">{{ live.icon }}</div>
-            <h3 class="card-title">{{ live.name }}</h3>
-            <p class="card-description">{{ live.description }}</p>
-          </div>
-          <div class="card-arrow">
+  <!-- Platforms Section -->
+  <section class="platforms">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Supported Platforms</h2>
+        <p class="section-description">Choose your preferred streaming platform</p>
+      </div>
+
+      <div class="platforms-grid">
+        @for (live of fakeLives; track live.route) {
+          <a [routerLink]="live.route" class="platform-card">
+            <div class="platform-icon" [style.background]="live.gradient">
+              {{ live.icon }}
+            </div>
+            <div class="platform-content">
+              <h3 class="platform-title">{{ live.name }}</h3>
+              <p class="platform-description">{{ live.description }}</p>
+            </div>
+            <div class="platform-arrow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Why Choose FakeLive?</h2>
+        <p class="section-description">Everything you need to perfect your live streaming skills</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
             </svg>
           </div>
-        </a>
-      }
-    </div>
+          <h3 class="feature-title">Realistic Interface</h3>
+          <p class="feature-description">Experience authentic live streaming interfaces that mirror real platforms perfectly</p>
+        </div>
 
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">📱</div>
-        <h4 class="feature-title">Mobile Ready</h4>
-        <p class="feature-text">Works perfectly on all devices</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🎬</div>
-        <h4 class="feature-title">Realistic Simulations</h4>
-        <p class="feature-text">Authentic live streaming experience</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚡</div>
-        <h4 class="feature-title">Instant Access</h4>
-        <p class="feature-text">No registration required</p>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">100% Private</h3>
+          <p class="feature-description">Your practice sessions stay completely private. No real broadcasts, no audience</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Instant Access</h3>
+          <p class="feature-description">No downloads, no registration. Start practicing in seconds from any device</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Simulated Interactions</h3>
+          <p class="feature-description">Practice with realistic viewer counts, comments, and reactions</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Customizable</h3>
+          <p class="feature-description">Set your username, profile picture, verified status, and viewer count</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Build Confidence</h3>
+          <p class="feature-description">Practice until you're ready. Perfect for overcoming camera shyness</p>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
 
+  <!-- Footer -->
   <footer class="footer">
-    <p>Built for content creators and streamers</p>
+    <div class="footer-container">
+      <p class="footer-text">Built with care for content creators and streamers worldwide</p>
+    </div>
   </footer>
 </div>
