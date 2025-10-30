@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Profile {
   id: number;
@@ -14,6 +15,32 @@ interface Profile {
   imports: [CommonModule],
   templateUrl: './instagram-live.html',
   styleUrl: './instagram-live.css',
+  animations: [
+    trigger('commentAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(30px) scale(0.95)' }),
+        animate('500ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-out',
+          style({ opacity: 0, transform: 'translateY(-20px) scale(0.95)' }))
+      ])
+    ]),
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(30px) scale(0.95)' }),
+          animate('500ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
+        ], { optional: true }),
+        query(':leave', [
+          animate('300ms ease-out',
+            style({ opacity: 0, transform: 'translateY(-20px) scale(0.95)' }))
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class InstagramLive implements OnInit, OnDestroy {
   @ViewChild('cameraFeed', { static: false }) cameraFeed?: ElementRef<HTMLVideoElement>;
@@ -24,8 +51,11 @@ export class InstagramLive implements OnInit, OnDestroy {
   facingMode: 'user' | 'environment' = 'user';
   loading = true;
   audioEnabled = true;
-  comments: Array<{ username: string; text: string; profileId?: number; initial: string; gradient: string }> = [];
+  comments: Array<{ id: number; username: string; text: string; profileId?: number; initial: string; gradient: string }> = [];
   hearts: Array<{ id: number; emoji: string; animClass: string; right: string }> = [];
+  private commentIdCounter = 0;
+  private isMobile = false;
+  private fullscreenElement: HTMLElement | null = null;
 
   // User configuration
   username = 'your_username';
@@ -129,6 +159,9 @@ export class InstagramLive implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    // Detect mobile device
+    this.isMobile = this.detectMobile();
+
     // Load configuration from IndexedDB or memory
     this.liveConfigService.setCurrentPlatform('instagram');
 
@@ -153,10 +186,23 @@ export class InstagramLive implements OnInit, OnDestroy {
     await this.initCamera();
   }
 
+  detectMobile(): boolean {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 768;
+
+    return isMobileUA || (isTouchDevice && isSmallScreen);
+  }
+
   ngOnDestroy() {
     this.stopAllSimulations();
     if (this.currentStream) {
       this.currentStream.getTracks().forEach(track => track.stop());
+    }
+    // Exit fullscreen if active
+    if (this.isMobile && document.fullscreenElement) {
+      this.exitFullscreen();
     }
   }
 
@@ -176,6 +222,13 @@ export class InstagramLive implements OnInit, OnDestroy {
         this.cameraFeed.nativeElement.srcObject = stream;
       }
       this.loading = false;
+
+      // Enter fullscreen on mobile devices
+      if (this.isMobile) {
+        setTimeout(() => {
+          this.enterFullscreen();
+        }, 100);
+      }
 
       this.startViewerSimulation();
       this.startCommentSimulation();
@@ -235,15 +288,19 @@ export class InstagramLive implements OnInit, OnDestroy {
   addComment(username: string, text: string, profileId?: number) {
     const initial = username.charAt(0).toUpperCase();
     const gradient = this.gradients[Math.floor(Math.random() * this.gradients.length)];
+    const id = this.commentIdCounter++;
 
-    this.comments.push({ username, text, profileId, initial, gradient });
+    // Add new comment at the beginning (will appear at bottom with column-reverse)
+    this.comments.unshift({ id, username, text, profileId, initial, gradient });
 
+    // Remove oldest comments (from the end of array, which is top visually)
     while (this.comments.length > 6) {
-      this.comments.shift();
+      this.comments.pop();
     }
 
+    // Remove this specific comment after timeout
     setTimeout(() => {
-      const index = this.comments.findIndex(c => c.username === username && c.text === text);
+      const index = this.comments.findIndex(c => c.id === id);
       if (index !== -1) {
         this.comments.splice(index, 1);
       }
@@ -352,13 +409,84 @@ export class InstagramLive implements OnInit, OnDestroy {
     }
   }
 
-  endLive() {
+  async enterFullscreen() {
+    try {
+      const element = document.documentElement;
+      this.fullscreenElement = element;
+
+      if (element.requestFullscreen) {
+        await element.requestFullscreen();
+      } else if ((element as any).webkitRequestFullscreen) {
+        // Safari
+        await (element as any).webkitRequestFullscreen();
+      } else if ((element as any).mozRequestFullScreen) {
+        // Firefox
+        await (element as any).mozRequestFullScreen();
+      } else if ((element as any).msRequestFullscreen) {
+        // IE/Edge
+        await (element as any).msRequestFullscreen();
+      }
+
+      // Lock orientation to portrait on mobile
+      if ('screen' in window && 'orientation' in (window.screen as any)) {
+        try {
+          const screenOrientation = (window.screen as any).orientation;
+          if (screenOrientation && screenOrientation.lock) {
+            await screenOrientation.lock('portrait');
+          }
+        } catch (error) {
+          // Orientation lock may fail, ignore
+          console.log('Orientation lock not supported or failed');
+        }
+      }
+    } catch (error) {
+      console.error('Error entering fullscreen:', error);
+    }
+  }
+
+  async exitFullscreen() {
+    try {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        await (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        await (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen) {
+        await (document as any).msExitFullscreen();
+      }
+
+      // Unlock orientation
+      if ('screen' in window && 'orientation' in (window.screen as any)) {
+        try {
+          const screenOrientation = (window.screen as any).orientation;
+          if (screenOrientation && screenOrientation.unlock) {
+            screenOrientation.unlock();
+          }
+        } catch (error) {
+          // Ignore unlock errors
+        }
+      }
+
+      this.fullscreenElement = null;
+    } catch (error) {
+      console.error('Error exiting fullscreen:', error);
+    }
+  }
+
+  async endLive() {
     const confirmEnd = confirm('End Live Video?');
     if (confirmEnd) {
       this.stopAllSimulations();
       if (this.currentStream) {
         this.currentStream.getTracks().forEach(track => track.stop());
       }
+
+      // Exit fullscreen if active
+      if (this.isMobile && document.fullscreenElement) {
+        await this.exitFullscreen();
+      }
+
       this.router.navigate(['/']);
     }
   }

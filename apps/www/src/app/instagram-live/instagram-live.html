@@ -50,9 +50,9 @@
 </div>
 
 <!-- Comments -->
-<div class="comments-section">
-  @for (comment of comments; track $index) {
-    <div class="comment-item">
+<div class="comments-section" [@listAnimation]="comments.length">
+  @for (comment of comments; track comment.id) {
+    <div class="comment-item" [@commentAnimation]>
       @if (comment.profileId) {
         <img [src]="'assets/profiles/profile-' + comment.profileId + '.jpg'" class="comment-avatar" [alt]="comment.username">
       } @else {
