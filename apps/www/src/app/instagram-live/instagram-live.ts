@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostBinding, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
@@ -44,6 +44,7 @@ interface Profile {
 })
 export class InstagramLive implements OnInit, OnDestroy {
   @ViewChild('cameraFeed', { static: false }) cameraFeed?: ElementRef<HTMLVideoElement>;
+  @HostBinding('class.fullscreen-active') isFullscreenActive = false;
 
   viewerCount = 0;
   displayViewerCount = '0';
@@ -162,6 +163,9 @@ export class InstagramLive implements OnInit, OnDestroy {
     // Detect mobile device
     this.isMobile = this.detectMobile();
 
+    // Set up fullscreen change listeners
+    this.setupFullscreenListeners();
+
     // Load configuration from IndexedDB or memory
     this.liveConfigService.setCurrentPlatform('instagram');
 
@@ -184,6 +188,17 @@ export class InstagramLive implements OnInit, OnDestroy {
     }
 
     await this.initCamera();
+  }
+
+  setupFullscreenListeners() {
+    const fullscreenChangeHandler = () => {
+      this.isFullscreenActive = !!document.fullscreenElement;
+    };
+
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
   }
 
   detectMobile(): boolean {
@@ -427,6 +442,9 @@ export class InstagramLive implements OnInit, OnDestroy {
         await (element as any).msRequestFullscreen();
       }
 
+      // Update fullscreen state
+      this.isFullscreenActive = true;
+
       // Lock orientation to portrait on mobile
       if ('screen' in window && 'orientation' in (window.screen as any)) {
         try {
@@ -455,6 +473,9 @@ export class InstagramLive implements OnInit, OnDestroy {
       } else if ((document as any).msExitFullscreen) {
         await (document as any).msExitFullscreen();
       }
+
+      // Update fullscreen state
+      this.isFullscreenActive = false;
 
       // Unlock orientation
       if ('screen' in window && 'orientation' in (window.screen as any)) {

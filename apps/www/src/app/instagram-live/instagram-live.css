@@ -49,6 +49,11 @@
   padding-top: max(12px, env(safe-area-inset-top));
 }
 
+/* Fullscreen mode adjustments */
+:host.fullscreen-active .top-header {
+  padding-top: 12px;
+}
+
 .header-left {
   display: flex;
   align-items: center;
