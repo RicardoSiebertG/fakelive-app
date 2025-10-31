@@ -64,10 +64,59 @@ export class InstagramLiveSetup implements OnInit {
     this.profilePicture = null;
   }
 
+  onUsernameInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+
+    // Apply Instagram username rules:
+    // 1. Convert to lowercase
+    value = value.toLowerCase();
+
+    // 2. Remove any characters that aren't letters, numbers, periods, or underscores
+    value = value.replace(/[^a-z0-9._]/g, '');
+
+    // 3. Remove consecutive periods
+    value = value.replace(/\.{2,}/g, '.');
+
+    // 4. Limit to 30 characters
+    value = value.substring(0, 30);
+
+    // Update the model and input value
+    this.username = value;
+    input.value = value;
+  }
+
+  validateUsername(): string | null {
+    const username = this.username.trim();
+
+    if (!username) {
+      return 'Please enter a username';
+    }
+
+    if (username.length < 1) {
+      return 'Username is too short';
+    }
+
+    if (username.startsWith('.') || username.endsWith('.')) {
+      return 'Username cannot start or end with a period';
+    }
+
+    if (!/^[a-z0-9._]+$/.test(username)) {
+      return 'Username can only contain lowercase letters, numbers, periods, and underscores';
+    }
+
+    if (/\.{2,}/.test(username)) {
+      return 'Username cannot have consecutive periods';
+    }
+
+    return null;
+  }
+
   async startLive() {
     // Validate username
-    if (!this.username.trim()) {
-      alert('Please enter a username');
+    const usernameError = this.validateUsername();
+    if (usernameError) {
+      alert(usernameError);
       return;
     }
 

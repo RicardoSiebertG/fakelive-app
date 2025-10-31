@@ -150,3 +150,34 @@
     </svg>
   </button>
 </div>
+
+<!-- End Confirmation Overlay -->
+@if (showEndConfirmation) {
+  <div class="end-confirmation-overlay">
+    <div class="end-confirmation-content">
+      <p class="end-confirmation-text">Are you sure you want to end your live video?</p>
+    </div>
+    <div class="end-confirmation-buttons">
+      <button class="end-btn end-btn-confirm" (click)="confirmEndLive()">End Now</button>
+      <button class="end-btn end-btn-cancel" (click)="cancelEndLive()">Cancel</button>
+    </div>
+  </div>
+}
+
+<!-- End Summary Overlay -->
+@if (showEndSummary) {
+  <div class="end-summary-overlay">
+    <div class="end-summary-content">
+      <h2 class="end-summary-title">Live video ended</h2>
+      <p class="end-summary-viewers">{{ getFormattedHighestViewerCount() }} viewers</p>
+      <div class="end-summary-profile-row">
+        @for (profileId of summaryViewerProfiles; track profileId) {
+          <img [src]="'assets/profiles/profile-' + profileId + '.jpg'" class="end-summary-profile" [alt]="'Viewer ' + profileId">
+        }
+      </div>
+    </div>
+    <div class="end-summary-button-container">
+      <button class="end-summary-done-btn" (click)="dismissEndSummary()">Done</button>
+    </div>
+  </div>
+}

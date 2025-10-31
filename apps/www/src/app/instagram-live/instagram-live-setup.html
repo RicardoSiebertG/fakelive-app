@@ -60,9 +60,13 @@
             type="text"
             id="username"
             [(ngModel)]="username"
+            (input)="onUsernameInput($event)"
             class="input-field input-with-verified"
             placeholder="Enter your username"
             maxlength="30"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
           >
           <button type="button" (click)="isVerified = !isVerified" class="verified-icon" [class.verified-active]="isVerified">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
@@ -71,7 +75,7 @@
             </svg>
           </button>
         </div>
-        <p class="help-text">Tap the checkmark to add a verified badge</p>
+        <p class="help-text">Lowercase letters, numbers, periods, and underscores only. Max 30 characters. Tap the checkmark to add a verified badge.</p>
       </div>
 
       <!-- Viewer Count Section -->

@@ -52,11 +52,16 @@ export class InstagramLive implements OnInit, OnDestroy {
   facingMode: 'user' | 'environment' = 'user';
   loading = true;
   audioEnabled = true;
+  showEndConfirmation = false;
+  showEndSummary = false;
+  highestViewerCount = 0;
+  summaryViewerProfiles: number[] = [];
   comments: Array<{ id: number; username: string; text: string; profileId?: number; initial: string; gradient: string }> = [];
   hearts: Array<{ id: number; emoji: string; animClass: string; right: string }> = [];
   private commentIdCounter = 0;
   private isMobile = false;
   private fullscreenElement: HTMLElement | null = null;
+  private commentedProfileIds = new Set<number>();
 
   // User configuration
   username = 'your_username';
@@ -257,6 +262,7 @@ export class InstagramLive implements OnInit, OnDestroy {
   startViewerSimulation() {
     // Start with the configured initial viewer count
     this.viewerCount = this.initialViewerCount;
+    this.highestViewerCount = this.initialViewerCount;
     this.updateViewerCount();
 
     // Calculate the fluctuation range (±10% of initial count)
@@ -278,6 +284,11 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   updateViewerCount() {
+    // Track highest viewer count
+    if (this.viewerCount > this.highestViewerCount) {
+      this.highestViewerCount = this.viewerCount;
+    }
+
     if (this.viewerCount >= 1000) {
       const thousands = Math.floor(this.viewerCount / 100) / 10;
       this.displayViewerCount = thousands.toFixed(1) + 'K';
@@ -304,6 +315,11 @@ export class InstagramLive implements OnInit, OnDestroy {
     const initial = username.charAt(0).toUpperCase();
     const gradient = this.gradients[Math.floor(Math.random() * this.gradients.length)];
     const id = this.commentIdCounter++;
+
+    // Track profile IDs from comments for end summary
+    if (profileId) {
+      this.commentedProfileIds.add(profileId);
+    }
 
     // Add new comment at the beginning (will appear at bottom with column-reverse)
     this.comments.unshift({ id, username, text, profileId, initial, gradient });
@@ -495,20 +511,44 @@ export class InstagramLive implements OnInit, OnDestroy {
     }
   }
 
-  async endLive() {
-    const confirmEnd = confirm('End Live Video?');
-    if (confirmEnd) {
-      this.stopAllSimulations();
-      if (this.currentStream) {
-        this.currentStream.getTracks().forEach(track => track.stop());
-      }
+  endLive() {
+    this.showEndConfirmation = true;
+  }
 
-      // Exit fullscreen if active
-      if (this.isMobile && document.fullscreenElement) {
-        await this.exitFullscreen();
-      }
+  cancelEndLive() {
+    this.showEndConfirmation = false;
+  }
 
-      this.router.navigate(['/']);
+  async confirmEndLive() {
+    this.showEndConfirmation = false;
+    this.stopAllSimulations();
+    if (this.currentStream) {
+      this.currentStream.getTracks().forEach(track => track.stop());
     }
+
+    // Generate profile list from commenters (up to 5)
+    this.summaryViewerProfiles = Array.from(this.commentedProfileIds).slice(0, 5);
+
+    // Show end summary
+    this.showEndSummary = true;
+  }
+
+  async dismissEndSummary() {
+    this.showEndSummary = false;
+
+    // Exit fullscreen if active
+    if (this.isMobile && document.fullscreenElement) {
+      await this.exitFullscreen();
+    }
+
+    this.router.navigate(['/']);
+  }
+
+  getFormattedHighestViewerCount(): string {
+    if (this.highestViewerCount >= 1000) {
+      const thousands = Math.floor(this.highestViewerCount / 100) / 10;
+      return thousands.toFixed(1) + 'K';
+    }
+    return this.highestViewerCount.toString();
   }
 }
