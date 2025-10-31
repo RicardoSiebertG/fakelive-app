@@ -1,0 +1,112 @@
+<div class="setup-page">
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <button type="button" (click)="cancel()" class="back-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </button>
+      <h1 class="nav-title">TikTok Fake Live</h1>
+    </div>
+  </nav>
+
+  <div class="setup-container">
+
+    @if (loading) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Loading your settings...</p>
+      </div>
+    } @else {
+      <div class="setup-content">
+      <!-- Profile Picture Section -->
+      <div class="form-section">
+        <label class="section-label">Profile Picture</label>
+
+        <div class="profile-picture-row">
+          <div class="profile-picture-area">
+            @if (profilePicture) {
+              <div class="profile-preview">
+                <img [src]="profilePicture" alt="Profile" class="preview-image">
+                <button type="button" (click)="removePhoto()" class="btn-remove">✕</button>
+              </div>
+            } @else {
+              <div class="profile-placeholder">
+                <div class="placeholder-icon">👤</div>
+              </div>
+            }
+          </div>
+
+          <div class="photo-buttons">
+            <button type="button" (click)="selectFile()" class="btn btn-outline">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+              </svg>
+              Choose Photo
+            </button>
+          </div>
+        </div>
+
+        <input #fileInput type="file" accept="image/*" capture="user" (change)="onFileSelect($event)" style="display: none">
+      </div>
+
+      <!-- Username Section -->
+      <div class="form-section">
+        <label class="section-label" for="username">Username</label>
+        <div class="input-with-icon">
+          <input
+            type="text"
+            id="username"
+            [(ngModel)]="username"
+            (input)="onUsernameInput($event)"
+            class="input-field input-with-verified"
+            placeholder="Enter your username"
+            maxlength="24"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+          >
+          <button type="button" (click)="isVerified = !isVerified" class="verified-icon" [class.verified-active]="isVerified">
+            <img
+              [src]="isVerified ? '/assets/tiktok-verified.svg' : '/assets/tiktok-verified-gray.svg'"
+              alt="Verified badge"
+              width="20"
+              height="20"
+              class="verified-badge-img"
+            />
+          </button>
+        </div>
+        <p class="help-text">Letters, numbers, periods, and underscores only. Max 24 characters. Tap the star to add a verified badge.</p>
+      </div>
+
+      <!-- Viewer Count Section -->
+      <div class="form-section">
+        <label class="section-label" for="viewerCount">Initial Viewer Count</label>
+        <input
+          type="number"
+          id="viewerCount"
+          [(ngModel)]="viewerCount"
+          class="input-field"
+          placeholder="e.g., 15000"
+          min="0"
+          step="100"
+        >
+        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream</p>
+      </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button type="button" (click)="startLive()" class="btn-start-live">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          </svg>
+          Start Live Stream
+        </button>
+      </div>
+    }
+  </div>
+</div>

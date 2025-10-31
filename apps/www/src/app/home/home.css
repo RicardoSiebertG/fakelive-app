@@ -111,31 +111,133 @@
 }
 
 .hero-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+  margin: 0 auto;
   animation: fadeInUp 0.6s ease-out 0.3s backwards;
 }
 
-.btn-primary {
-  display: inline-flex;
+.btn-platform {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
+  gap: 12px;
+  padding: 18px 28px;
+  background: white;
+  color: #111827;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 16px;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+.btn-platform::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
 }
 
-.btn-primary:active {
-  transform: translateY(0);
+.btn-platform:hover::before {
+  opacity: 1;
+}
+
+.btn-platform:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.btn-platform:active {
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.btn-text {
+  flex: 1;
+  text-align: left;
+  z-index: 1;
+}
+
+.btn-arrow {
+  flex-shrink: 0;
+  transition: transform 0.3s;
+  z-index: 1;
+}
+
+.btn-platform:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Instagram Button */
+.btn-instagram {
+  border-color: rgba(240, 148, 51, 0.2);
+}
+
+.btn-instagram::before {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  opacity: 0.05;
+}
+
+.btn-instagram:hover {
+  border-color: rgba(240, 148, 51, 0.4);
+}
+
+/* TikTok Button */
+.btn-tiktok {
+  border-color: rgba(254, 44, 85, 0.2);
+}
+
+.btn-tiktok::before {
+  background: linear-gradient(135deg, #FE2C55 0%, #69C9D0 100%);
+  opacity: 0.05;
+}
+
+.btn-tiktok:hover {
+  border-color: rgba(254, 44, 85, 0.4);
+}
+
+/* Soon Button (Disabled) */
+.btn-soon {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-soon:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-soon::before {
+  display: none;
+}
+
+.btn-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  z-index: 1;
 }
 
 /* Platforms Section */
@@ -351,6 +453,19 @@
     font-size: 18px;
   }
 
+  .hero-cta {
+    max-width: 100%;
+  }
+
+  .btn-platform {
+    padding: 16px 24px;
+    font-size: 15px;
+  }
+
+  .btn-icon {
+    font-size: 22px;
+  }
+
   .section-title {
     font-size: 32px;
   }
@@ -380,9 +495,18 @@
     font-size: 32px;
   }
 
-  .btn-primary {
-    padding: 14px 28px;
-    font-size: 15px;
+  .btn-platform {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  .btn-badge {
+    font-size: 10px;
+    padding: 3px 8px;
   }
 
   .platform-card {

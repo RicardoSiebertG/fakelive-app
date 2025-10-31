@@ -353,9 +353,7 @@ export class InstagramLive implements OnInit, OnDestroy {
 
   createHeart() {
     const animClass = 'anim' + (Math.floor(Math.random() * 3) + 1);
-    const reactions = Math.random() < 0.8 ?
-      ['❤️', '💕', '💖', '💗', '💓', '💘'] :
-      ['😂', '🔥', '💯'];
+    const reactions = ['❤️', '😂', '🔥'];
     const emoji = reactions[Math.floor(Math.random() * reactions.length)];
     const randomOffset = Math.random() * 12 + 4;
     const right = randomOffset + 'px';

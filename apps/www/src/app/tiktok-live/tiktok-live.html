@@ -1,0 +1,205 @@
+<div class="live-container">
+  <!-- Camera Feed -->
+  <video
+    id="cameraFeed"
+    class="camera-feed"
+    autoplay
+    playsinline
+    [class.mirrored]="facingMode === 'user'"
+  ></video>
+
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="left-section">
+      <button class="close-button" (click)="showEndConfirmationDialog()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="center-section">
+      <div class="profile-info">
+        <div class="profile-avatar" [style.background]="profilePicture ? 'url(' + profilePicture + ') center/cover' : 'linear-gradient(135deg, #FE2C55 0%, #69C9D0 100%)'">
+          @if (!profilePicture) {
+            <span>{{ getProfileInitial(username) }}</span>
+          }
+        </div>
+        <div class="profile-details">
+          <div class="username-row">
+            <span class="username">{{ username }}</span>
+            @if (isVerified) {
+              <img src="/assets/tiktok-verified.svg" alt="Verified" class="verified-badge" width="14" height="14" />
+            }
+          </div>
+        </div>
+        <div class="live-badge">LIVE</div>
+        <div class="viewer-count">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span>{{ displayViewerCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <button class="menu-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="5" r="1" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+          <circle cx="12" cy="19" r="1" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="comments-section">
+    @for (comment of comments; track comment.id) {
+      <div class="comment" [@commentAnimation]>
+        <div class="comment-avatar" [style.background]="getProfileGradient(comment.profileId)">
+          <span>{{ getProfileInitial(comment.username) }}</span>
+        </div>
+        <div class="comment-content">
+          <span class="comment-username">{{ comment.username }}</span>
+          <span class="comment-text">{{ comment.text }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Hearts Animation -->
+  <div class="hearts-container">
+    @for (heart of hearts; track heart.id) {
+      <div
+        class="heart"
+        [style.left.px]="heart.left"
+        [style.animation-duration.s]="heart.animationDuration"
+        [style.animation-delay.s]="heart.animationDelay"
+      >
+        {{ heart.emoji }}
+      </div>
+    }
+  </div>
+
+  <!-- Right Side Controls -->
+  <div class="right-controls">
+    <button class="control-button" (click)="flipCamera()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-4.98 3.66l-.163 .01l-.086 .016l-.142 .045l-.113 .054l-.07 .043l-.095 .071l-.058 .054l-4 4l-.083 .094a1 1 0 0 0 1.497 1.32l2.293 -2.293v5.586l.007 .117a1 1 0 0 0 1.993 -.117v-5.585l2.293 2.292l.094 .083a1 1 0 0 0 1.32 -1.497l-4 -4l-.082 -.073l-.089 -.064l-.113 -.062l-.081 -.034l-.113 -.034l-.112 -.02l-.098 -.006z"/>
+      </svg>
+    </button>
+
+    <button class="control-button" (click)="toggleCamera()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 7l-7 5 7 5V7z"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+    </button>
+
+    <button class="control-button" (click)="toggleMicrophone()" [class.active]="audioEnabled">
+      @if (audioEnabled) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="1" y1="1" x2="23" y2="23"/>
+          <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+          <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      }
+    </button>
+
+    <button class="control-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6m0 6v6m10-7h-6m-6 0H1m17.66-6.66l-4.24 4.24m-6.84 0L2.34 4.34m15.32 15.32l-4.24-4.24m-6.84 0l-4.24 4.24"/>
+      </svg>
+    </button>
+
+    <button class="control-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/>
+        <line x1="16" y1="8" x2="2" y2="22"/>
+        <line x1="17.5" y1="15" x2="9" y2="15"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <div class="comment-input">
+      <input type="text" placeholder="Add a comment..." readonly />
+    </div>
+    <button class="gift-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 12 20 22 4 22 4 12"/>
+        <rect x="2" y="7" width="20" height="5"/>
+        <line x1="12" y1="22" x2="12" y2="7"/>
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+      </svg>
+    </button>
+    <button class="share-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="18" cy="5" r="3"/>
+        <circle cx="6" cy="12" r="3"/>
+        <circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- End Confirmation Modal -->
+  @if (showEndConfirmation) {
+    <div class="modal-backdrop" (click)="cancelEnd()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>End LIVE?</h2>
+        <p>Are you sure you want to end your live stream?</p>
+        <div class="modal-actions">
+          <button class="cancel-button" (click)="cancelEnd()">Cancel</button>
+          <button class="confirm-button" (click)="confirmEnd()">End</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- End Summary Modal -->
+  @if (showEndSummary) {
+    <div class="modal-backdrop">
+      <div class="summary-content">
+        <h2>LIVE Ended</h2>
+        <div class="summary-stats">
+          <div class="stat">
+            <div class="stat-value">{{ displayViewerCount }}</div>
+            <div class="stat-label">Peak Viewers</div>
+          </div>
+        </div>
+        <div class="summary-profiles">
+          <p class="summary-label">Viewers who commented:</p>
+          <div class="profile-list">
+            @for (profile of getCommentedProfiles(); track profile.id) {
+              <div class="profile-item">
+                <div class="profile-avatar-small" [style.background]="getProfileGradient(profile.id)">
+                  <span>{{ getProfileInitial(profile.username) }}</span>
+                </div>
+                <span class="profile-name">{{ profile.username }}</span>
+              </div>
+            }
+          </div>
+        </div>
+        <button class="done-button" (click)="goHome()">Done</button>
+      </div>
+    </div>
+  }
+</div>

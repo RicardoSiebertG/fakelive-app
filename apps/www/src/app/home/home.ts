@@ -11,13 +11,19 @@ export class Home {
   fakeLives = [
     {
       name: 'Instagram Live',
-      description: 'Simulate Instagram live streaming',
+      description: 'Create your parallel Instagram reality with thousands of followers',
       route: '/instagram-live/setup',
       icon: '📸',
       gradient: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'
+    },
+    {
+      name: 'TikTok Live',
+      description: 'Experience parallel TikTok fame with viral live streams',
+      route: '/tiktok-live/setup',
+      icon: '🎵',
+      gradient: 'linear-gradient(135deg, #FE2C55 0%, #69C9D0 100%)'
     }
     // Future platforms can be added here:
-    // { name: 'TikTok Live', route: '/tiktok-live/setup', icon: '🎵' },
     // { name: 'Twitch Live', route: '/twitch-live/setup', icon: '🎮' },
   ];
 }
