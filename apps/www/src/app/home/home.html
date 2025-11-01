@@ -24,21 +24,21 @@
       </p>
       <div class="hero-cta">
         <a routerLink="/instagram-live/setup" class="btn-platform btn-instagram">
-          <span class="btn-icon">📸</span>
+          <ion-icon name="logo-instagram" class="btn-icon"></ion-icon>
           <span class="btn-text">Fake Instagram Live</span>
           <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </a>
         <a routerLink="/tiktok-live/setup" class="btn-platform btn-tiktok">
-          <span class="btn-icon">🎵</span>
+          <ion-icon name="logo-tiktok" class="btn-icon"></ion-icon>
           <span class="btn-text">Fake TikTok Live</span>
           <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </a>
         <button class="btn-platform btn-soon" disabled>
-          <span class="btn-icon">📘</span>
+          <ion-icon name="logo-facebook" class="btn-icon"></ion-icon>
           <span class="btn-text">Fake Facebook Live</span>
           <span class="btn-badge">Soon</span>
         </button>
@@ -58,7 +58,7 @@
         @for (live of fakeLives; track live.route) {
           <a [routerLink]="live.route" class="platform-card">
             <div class="platform-icon" [style.background]="live.gradient">
-              {{ live.icon }}
+              <ion-icon [name]="live.icon"></ion-icon>
             </div>
             <div class="platform-content">
               <h3 class="platform-title">{{ live.name }}</h3>
