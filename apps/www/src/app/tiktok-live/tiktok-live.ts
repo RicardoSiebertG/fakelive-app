@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LiveConfigService } from '../services/live-config.service';
+import { AnalyticsService } from '../services/analytics.service';
 
 interface Comment {
   id: string;
@@ -174,9 +175,12 @@ export class TikTokLive implements OnInit, OnDestroy {
     'Let\'s gooo! 🚀'
   ];
 
+  private streamStartTime = 0;
+
   constructor(
     private router: Router,
-    private liveConfigService: LiveConfigService
+    private liveConfigService: LiveConfigService,
+    private analytics: AnalyticsService
   ) {}
 
   async ngOnInit() {
@@ -228,9 +232,19 @@ export class TikTokLive implements OnInit, OnDestroy {
     this.startViewerCountSimulation();
     this.startCommentSimulation();
     this.startHeartSimulation();
+
+    // Track live stream start
+    this.streamStartTime = Date.now();
+    this.analytics.trackLiveStreamStart('tiktok', this.viewerCount, this.isVerified);
   }
 
   ngOnDestroy() {
+    // Track live stream end
+    if (this.streamStartTime > 0) {
+      const duration = Date.now() - this.streamStartTime;
+      this.analytics.trackLiveStreamEnd('tiktok', duration);
+    }
+
     // Stop camera stream
     if (this.currentStream) {
       this.currentStream.getTracks().forEach(track => track.stop());

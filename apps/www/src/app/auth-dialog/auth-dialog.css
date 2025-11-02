@@ -1,0 +1,378 @@
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+  padding: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dialog Container */
+.dialog-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  max-width: 440px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280;
+  z-index: 10;
+}
+
+.close-button:hover {
+  background: #e5e7eb;
+  color: #111827;
+  transform: rotate(90deg);
+}
+
+/* Dialog Content */
+.dialog-content {
+  padding: 40px 32px 32px;
+}
+
+/* Header */
+.dialog-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #ef4444;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.dialog-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.dialog-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Messages */
+.message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.message svg {
+  flex-shrink: 0;
+}
+
+.message-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.message-success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Form */
+.auth-form {
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-google {
+  width: 100%;
+  padding: 14px 24px;
+  background: white;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: inherit;
+}
+
+.btn-google:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-family: inherit;
+}
+
+.link-button:hover:not(:disabled) {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.link-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 24px 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.divider span {
+  padding: 0 16px;
+}
+
+/* Toggle Mode */
+.toggle-mode {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 24px;
+}
+
+.toggle-mode span {
+  margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialog-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .dialog-container {
+    max-width: 100%;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    animation: slideUpMobile 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .dialog-content {
+    padding: 32px 24px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dialog-title {
+    font-size: 24px;
+  }
+
+  .close-button {
+    top: 12px;
+    right: 12px;
+  }
+}

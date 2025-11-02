@@ -1,5 +1,8 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AnalyticsService } from '../services/analytics.service';
+import { AuthService } from '../services/auth.service';
+import { App } from '../app';
 
 @Component({
   selector: 'app-home',
@@ -9,6 +12,24 @@ import { RouterLink } from '@angular/router';
   styleUrl: './home.css',
 })
 export class Home {
+
+  constructor(
+    private analytics: AnalyticsService,
+    public authService: AuthService,
+    private appComponent: App
+  ) {}
+
+  trackPlatformClick(platform: string): void {
+    this.analytics.trackPlatformSelected(platform);
+  }
+
+  openAuthDialog(): void {
+    this.appComponent.openAuthDialog();
+  }
+
+  async signOut(): Promise<void> {
+    await this.authService.signOut();
+  }
 
   fakeLives = [
     {

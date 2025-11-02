@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isNotAnonymous() {
+      return isAuthenticated() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Users collection rules - only stores statistics, not profile configs
+    match /users/{userId} {
+      // Allow users to read their own statistics
+      allow read: if isOwner(userId);
+
+      // Allow authenticated non-anonymous users to create their own stats document
+      allow create: if isOwner(userId) && isNotAnonymous();
+
+      // Allow users to update their own statistics
+      // Only allows incrementing counters and updating timestamps
+      allow update: if isOwner(userId)
+                    && isNotAnonymous()
+                    && request.resource.data.userId == userId;
+
+      // Deny delete operations
+      allow delete: if false;
+    }
+
+    // Deny all other operations by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

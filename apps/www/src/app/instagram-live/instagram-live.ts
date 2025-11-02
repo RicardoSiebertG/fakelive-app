@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostBinding, Rende
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
+import { AnalyticsService } from '../services/analytics.service';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Profile {
@@ -159,9 +160,12 @@ export class InstagramLive implements OnInit, OnDestroy {
     'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
   ];
 
+  private streamStartTime = 0;
+
   constructor(
     private router: Router,
-    private liveConfigService: LiveConfigService
+    private liveConfigService: LiveConfigService,
+    private analytics: AnalyticsService
   ) {}
 
   async ngOnInit() {
@@ -253,6 +257,10 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.startViewerSimulation();
       this.startCommentSimulation();
       this.startHeartSimulation();
+
+      // Track live stream start
+      this.streamStartTime = Date.now();
+      this.analytics.trackLiveStreamStart('instagram', this.initialViewerCount, this.isVerified);
     } catch (error) {
       console.error('Error accessing camera:', error);
       this.loading = false;
@@ -360,6 +368,12 @@ export class InstagramLive implements OnInit, OnDestroy {
     const id = this.heartIdCounter++;
 
     this.hearts.push({ id, emoji, animClass, right });
+
+    // Track reaction analytics (sample every 20th to avoid too many events)
+    if (this.heartIdCounter % 20 === 0) {
+      const reactionType = emoji === '❤️' ? 'heart' : emoji === '😂' ? 'laugh' : 'fire';
+      this.analytics.trackReactionSent('instagram', reactionType);
+    }
 
     setTimeout(() => {
       const index = this.hearts.findIndex(h => h.id === id);
@@ -523,6 +537,10 @@ export class InstagramLive implements OnInit, OnDestroy {
     if (this.currentStream) {
       this.currentStream.getTracks().forEach(track => track.stop());
     }
+
+    // Track live stream end
+    const duration = Date.now() - this.streamStartTime;
+    this.analytics.trackLiveStreamEnd('instagram', duration);
 
     // Generate profile list from commenters (up to 5)
     this.summaryViewerProfiles = Array.from(this.commentedProfileIds).slice(0, 5);

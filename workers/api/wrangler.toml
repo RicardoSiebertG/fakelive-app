@@ -1,0 +1,22 @@
+name = "fakelive-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "fakelive-app"
+database_id = "05d178e0-28ca-4894-adc5-cf5d5278d44b" # TODO: Add your database ID after creating D1 database
+
+# Environment Variables (set secrets via GitHub Actions or wrangler secret put)
+[vars]
+BETTER_AUTH_URL = "https://api.fakelive.app"
+PAYPAL_MODE = "production" # or "sandbox" for testing
+
+# Production environment
+[env.production]
+vars = { BETTER_AUTH_URL = "https://api.fakelive.app" }
+
+# Development environment
+[env.development]
+vars = { BETTER_AUTH_URL = "http://localhost:8787" }
