@@ -4,7 +4,7 @@
 
 ### 1. Create D1 Database (via Cloudflare Dashboard)
 - Go to Cloudflare Dashboard → Workers & Pages → D1
-- Click "Create database" → Name: `fakelive-production`
+- Click "Create database" → Name: `fakelive-app`
 - Copy the Database ID and update `workers/api/wrangler.toml`
 
 ### 2. Connect GitHub Repository
@@ -35,7 +35,7 @@ cd workers/api
 npm install
 wrangler login
 npm run db:generate
-wrangler d1 migrations apply fakelive-production --remote
+wrangler d1 migrations apply fakelive-app --remote
 ```
 
 ### 5. Add Custom Domain

@@ -263,7 +263,7 @@ compatibility_date = "2024-01-01"
 # D1 Database
 [[d1_databases]]
 binding = "DB"
-database_name = "fakelive-production"
+database_name = "fakelive-app"
 database_id = "your-database-id"
 
 # Environment Variables (use wrangler secret for sensitive values)
@@ -294,7 +294,7 @@ export default {
   driver: 'd1',
   dbCredentials: {
     wranglerConfigPath: 'wrangler.toml',
-    dbName: 'fakelive-production',
+    dbName: 'fakelive-app',
   },
 } satisfies Config;
 ```
@@ -1425,16 +1425,16 @@ This guide uses Cloudflare's native GitHub integration. When you push to `main`,
 ```bash
 # From the monorepo root
 cd workers/api
-npx wrangler d1 create fakelive-production
+npx wrangler d1 create fakelive-app
 ```
 
 This will output something like:
 ```
-✅ Successfully created DB 'fakelive-production'
+✅ Successfully created DB 'fakelive-app'
 
 [[d1_databases]]
 binding = "DB"
-database_name = "fakelive-production"
+database_name = "fakelive-app"
 database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
@@ -1443,7 +1443,7 @@ database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```toml
 [[d1_databases]]
 binding = "DB"
-database_name = "fakelive-production"
+database_name = "fakelive-app"
 database_id = "YOUR_ACTUAL_DATABASE_ID_HERE"  # ← Paste here
 ```
 
@@ -1460,7 +1460,7 @@ This creates migration files in `src/db/migrations/`
 #### 1.3 Apply Initial Migration
 
 ```bash
-npx wrangler d1 migrations apply fakelive-production --remote
+npx wrangler d1 migrations apply fakelive-app --remote
 ```
 
 #### 1.4 Get Cloudflare API Token
@@ -1539,7 +1539,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx wrangler d1 migrations apply fakelive-production --remote
+          npx wrangler d1 migrations apply fakelive-app --remote
 
       - name: Deploy to Cloudflare Workers
         working-directory: workers/api
@@ -1746,7 +1746,7 @@ When you need to change the database schema:
 
 3. **Test locally:**
    ```bash
-   npx wrangler d1 migrations apply fakelive-production --local
+   npx wrangler d1 migrations apply fakelive-app --local
    npm run dev
    ```
 

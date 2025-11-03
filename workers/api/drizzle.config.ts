@@ -6,6 +6,6 @@ export default {
   driver: 'd1',
   dbCredentials: {
     wranglerConfigPath: 'wrangler.toml',
-    dbName: 'fakelive-production',
+    dbName: 'fakelive-app',
   },
 } satisfies Config;

@@ -13,7 +13,7 @@ Cloudflare Workers can automatically deploy when you push to your GitHub reposit
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
 2. Navigate to **Workers & Pages** → **D1**
 3. Click **Create database**
-4. Name: `fakelive-production`
+4. Name: `fakelive-app`
 5. Click **Create**
 6. **Copy the Database ID** - you'll need this next
 
@@ -24,7 +24,7 @@ Update `workers/api/wrangler.toml` with your Database ID:
 ```toml
 [[d1_databases]]
 binding = "DB"
-database_name = "fakelive-production"
+database_name = "fakelive-app"
 database_id = "your-database-id-here"  # ← Paste your actual Database ID
 ```
 
@@ -93,7 +93,7 @@ wrangler login
 npm run db:generate
 
 # Apply migrations to production D1
-wrangler d1 migrations apply fakelive-production --remote
+wrangler d1 migrations apply fakelive-app --remote
 ```
 
 ### Step 6: Add Custom Domain
@@ -231,7 +231,7 @@ When you change the schema:
    ```
 3. Apply to production:
    ```bash
-   wrangler d1 migrations apply fakelive-production --remote
+   wrangler d1 migrations apply fakelive-app --remote
    ```
 4. Commit and push:
    ```bash
@@ -281,10 +281,10 @@ Cloudflare will automatically redeploy the worker.
 
 ```bash
 # Verify migrations are applied
-wrangler d1 migrations list fakelive-production --remote
+wrangler d1 migrations list fakelive-app --remote
 
 # Check database
-wrangler d1 execute fakelive-production --remote --command "SELECT name FROM sqlite_master WHERE type='table';"
+wrangler d1 execute fakelive-app --remote --command "SELECT name FROM sqlite_master WHERE type='table';"
 ```
 
 ### Environment Variables Not Working
