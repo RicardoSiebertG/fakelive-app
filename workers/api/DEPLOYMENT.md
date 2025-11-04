@@ -76,6 +76,14 @@ Click **Add variable** and toggle "Encrypt":
 
 Click **Save and Deploy** after adding all variables.
 
+#### Configure Google OAuth Redirect URIs
+
+In Google Cloud Console → APIs & Services → Credentials → Your OAuth 2.0 Client:
+
+Add these **Authorized redirect URIs**:
+- Production: `https://api.fakelive.app/api/auth/callback/google`
+- Development: `http://localhost:8787/api/auth/callback/google`
+
 ### Step 5: Run Database Migrations
 
 You need to run migrations manually once (Cloudflare doesn't run migrations automatically):
