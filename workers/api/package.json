@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:generate": "drizzle-kit generate:sqlite",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply fakelive-app --remote",
     "db:migrate:local": "wrangler d1 migrations apply fakelive-app --local",
     "db:studio": "drizzle-kit studio"

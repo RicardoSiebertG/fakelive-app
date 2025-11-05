@@ -1,19 +1,20 @@
 name = "fakelive-app"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+account_id = "3acf2d5368d3b2346781d086da2c53da"
 
 # Observability configuration
 [observability.logs]
 enabled = true
 head_sampling_rate = 1
 invocation_logs = true
-persist = true
 
 # D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "fakelive-app"
-database_id = "05d178e0-28ca-4894-adc5-cf5d5278d44b"
+database_id = "14dc19a3-30df-4a41-8197-4042edaa087e"
+migrations_dir = "src/db/migrations"
 
 # Environment Variables (set secrets via GitHub Actions or wrangler secret put)
 [vars]
