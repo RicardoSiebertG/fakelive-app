@@ -42,7 +42,7 @@ export class AuthService {
    */
   private async loadSession(): Promise<void> {
     try {
-      const response = await fetch(`${this.apiUrl}/auth/session`, {
+      const response = await fetch(`${this.apiUrl}/api/auth/session`, {
         credentials: 'include',
       });
 
@@ -89,7 +89,7 @@ export class AuthService {
    * Sign up with email and password
    */
   async signUp(email: string, password: string, name?: string): Promise<void> {
-    const response = await fetch(`${this.apiUrl}/auth/sign-up/email`, {
+    const response = await fetch(`${this.apiUrl}/api/auth/sign-up/email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ export class AuthService {
    * Sign in with email and password
    */
   async signIn(email: string, password: string): Promise<void> {
-    const response = await fetch(`${this.apiUrl}/auth/sign-in/email`, {
+    const response = await fetch(`${this.apiUrl}/api/auth/sign-in/email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -145,14 +145,14 @@ export class AuthService {
    */
   async signInWithGoogle(): Promise<void> {
     // Redirect to Google OAuth flow
-    window.location.href = `${this.apiUrl}/auth/sign-in/social?provider=google&redirect_uri=${window.location.origin}`;
+    window.location.href = `${this.apiUrl}/api/auth/sign-in/social?provider=google&redirect_uri=${window.location.origin}`;
   }
 
   /**
    * Send password reset email
    */
   async sendPasswordReset(email: string): Promise<void> {
-    const response = await fetch(`${this.apiUrl}/auth/reset-password`, {
+    const response = await fetch(`${this.apiUrl}/api/auth/reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ export class AuthService {
    * Sign out
    */
   async signOut(): Promise<void> {
-    const response = await fetch(`${this.apiUrl}/auth/sign-out`, {
+    const response = await fetch(`${this.apiUrl}/api/auth/sign-out`, {
       method: 'POST',
       credentials: 'include',
     });
