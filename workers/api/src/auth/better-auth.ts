@@ -35,5 +35,12 @@ export function initAuth(env: Env) {
 
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
+
+    // Allow requests from frontend origins
+    trustedOrigins: [
+      'https://fakelive.app',
+      'https://www.fakelive.app',
+      'http://localhost:4200', // Local development
+    ],
   });
 }
