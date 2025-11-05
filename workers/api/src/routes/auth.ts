@@ -4,15 +4,16 @@ import type { Env } from '../types/env';
 const app = new Hono<{ Bindings: Env }>();
 
 // Better-auth automatically handles these routes:
-// - POST /auth/sign-in/email
-// - POST /auth/sign-up/email
-// - POST /auth/sign-in/social
-// - GET /auth/session
-// - POST /auth/sign-out
-// - POST /auth/send-verification-email
-// - GET /auth/verify-email
+// - POST /sign-in/email
+// - POST /sign-up/email
+// - POST /sign-in/social
+// - GET /session
+// - POST /sign-out
+// - POST /send-verification-email
+// - GET /verify-email
+// - GET /callback/google (OAuth callback)
 
-// We just need to forward requests to the auth instance
+// Forward all auth requests to Better-auth handler
 app.all('/*', async (c) => {
   const auth = c.get('auth');
 
@@ -20,8 +21,9 @@ app.all('/*', async (c) => {
     return c.json({ error: 'Auth not initialized' }, 500);
   }
 
-  // Better-auth will handle the request
-  return auth.handler(c.req.raw);
+  // Better-auth handler processes the request and returns a Response
+  const response = await auth.handler(c.req.raw);
+  return response;
 });
 
 export default app;
