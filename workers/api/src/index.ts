@@ -18,13 +18,32 @@ app.use('*', cors({
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Better-auth handler - must be before other routes
-app.on(['GET', 'POST'], '/auth/*', (c) => {
+// Better-auth handler - handles all auth routes at /api/auth/*
+// This must be defined before the session middleware
+app.on(['GET', 'POST'], '/api/auth/*', (c) => {
   return initAuth(c.env).handler(c.req.raw);
 });
 
-// Session middleware for protected routes
-app.use('/api/*', async (c, next) => {
+// Session middleware for protected API routes (not auth routes)
+app.use('/api/payments/*', async (c, next) => {
+  const auth = initAuth(c.env);
+
+  try {
+    const session = await auth.api.getSession({
+      headers: c.req.raw.headers
+    });
+
+    c.set('session', session);
+    c.set('auth', auth);
+  } catch (error) {
+    console.error('Session error:', error);
+    c.set('session', null);
+  }
+
+  await next();
+});
+
+app.use('/api/live-streams/*', async (c, next) => {
   const auth = initAuth(c.env);
 
   try {
@@ -59,7 +78,7 @@ app.get('/', (c) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      auth: '/auth/*',
+      auth: '/api/auth/*',
       payments: '/api/payments/*',
       liveStreams: '/api/live-streams/*',
       webhooks: '/webhooks/*',
