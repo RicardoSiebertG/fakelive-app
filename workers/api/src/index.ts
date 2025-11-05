@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { initAuth } from './auth/better-auth';
-import authRoutes from './routes/auth';
 import paymentsRoutes from './routes/payments';
 import liveStreamsRoutes from './routes/live-streams';
 import webhooksRoutes from './routes/webhooks';
@@ -19,8 +18,13 @@ app.use('*', cors({
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Better-auth session middleware
-app.use('*', async (c, next) => {
+// Better-auth handler - must be before other routes
+app.on(['GET', 'POST'], '/auth/*', (c) => {
+  return initAuth(c.env).handler(c.req.raw);
+});
+
+// Session middleware for protected routes
+app.use('/api/*', async (c, next) => {
   const auth = initAuth(c.env);
 
   try {
@@ -38,8 +42,7 @@ app.use('*', async (c, next) => {
   await next();
 });
 
-// Routes
-app.route('/auth', authRoutes);
+// API Routes
 app.route('/api/payments', paymentsRoutes);
 app.route('/api/live-streams', liveStreamsRoutes);
 app.route('/webhooks', webhooksRoutes);
