@@ -6,6 +6,7 @@ export interface PlatformConfig {
   profilePicture: string | null;
   isVerified: boolean;
   initialViewerCount: number;
+  commentLanguages?: string[]; // Language codes for comments (e.g., ['en', 'es'])
   lastUsed: Date;
 }
 

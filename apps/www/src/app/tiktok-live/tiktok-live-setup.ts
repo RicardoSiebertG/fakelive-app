@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
 import { AuthService } from '../services/auth.service';
+import { CommentService, AvailableLanguage } from '../services/comment.service';
 import { App } from '../app';
 
 @Component({
@@ -23,17 +24,21 @@ export class TikTokLiveSetup implements OnInit {
   profilePicture: string | null = null;
   loading = true;
 
-  // Feature restrictions
+  // Language selection
+  availableLanguages: AvailableLanguage[] = [];
+  selectedLanguages: string[] = ['en-US']; // Default to English (US)
+
+  // Feature restrictions - DISABLED
   get hasFullFeatures(): boolean {
-    return this.authService.hasFullFeatures();
+    return true; // Always return true - limitations disabled
   }
 
   get maxViewerCount(): number {
-    return this.hasFullFeatures ? 999999 : 500;
+    return 999999; // Always max
   }
 
   get canUseVerified(): boolean {
-    return this.hasFullFeatures;
+    return true; // Always allow verified badge
   }
 
   constructor(
@@ -41,8 +46,12 @@ export class TikTokLiveSetup implements OnInit {
     private liveConfigService: LiveConfigService,
     private analytics: AnalyticsService,
     private authService: AuthService,
+    private commentService: CommentService,
     private appComponent: App
-  ) {}
+  ) {
+    // Load available languages
+    this.availableLanguages = this.commentService.getAvailableLanguages();
+  }
 
   async ngOnInit() {
     // Set platform and load saved configuration from IndexedDB
@@ -56,14 +65,7 @@ export class TikTokLiveSetup implements OnInit {
       this.isVerified = savedConfig.isVerified;
       this.viewerCount = savedConfig.initialViewerCount;
       this.profilePicture = savedConfig.profilePicture;
-
-      // Enforce restrictions for users without full features
-      if (!this.hasFullFeatures) {
-        this.isVerified = false;
-        if (this.viewerCount > this.maxViewerCount) {
-          this.viewerCount = this.maxViewerCount;
-        }
-      }
+      this.selectedLanguages = savedConfig.commentLanguages || ['en-US'];
     } catch (error) {
       console.error('Failed to load saved configuration', error);
     } finally {
@@ -90,6 +92,24 @@ export class TikTokLiveSetup implements OnInit {
 
   removePhoto() {
     this.profilePicture = null;
+  }
+
+  // Language selection methods
+  toggleLanguage(langCode: string) {
+    const index = this.selectedLanguages.indexOf(langCode);
+    if (index > -1) {
+      // Remove if already selected, but keep at least one language
+      if (this.selectedLanguages.length > 1) {
+        this.selectedLanguages.splice(index, 1);
+      }
+    } else {
+      // Add if not selected
+      this.selectedLanguages.push(langCode);
+    }
+  }
+
+  isLanguageSelected(langCode: string): boolean {
+    return this.selectedLanguages.includes(langCode);
   }
 
   onUsernameInput(event: Event) {
@@ -151,30 +171,13 @@ export class TikTokLiveSetup implements OnInit {
       return;
     }
 
-    // Enforce restrictions for users without full features
-    if (!this.hasFullFeatures) {
-      if (this.viewerCount > this.maxViewerCount) {
-        alert(`Sign in FREE to increase viewer limit! Currently limited to ${this.maxViewerCount} viewers.`);
-        return;
-      }
-      if (this.isVerified) {
-        alert('Sign in FREE to enable verified badge!');
-        return;
-      }
-    }
-
-    // Enforce maximum viewer count for all users
-    if (this.viewerCount > this.maxViewerCount) {
-      alert(`Maximum viewer count is ${this.maxViewerCount.toLocaleString()}`);
-      return;
-    }
-
     // Save configuration to IndexedDB (local storage only)
     await this.liveConfigService.saveConfig({
       username: this.username.trim(),
       profilePicture: this.profilePicture,
       isVerified: this.isVerified,
-      initialViewerCount: Math.floor(this.viewerCount)
+      initialViewerCount: Math.floor(this.viewerCount),
+      commentLanguages: this.selectedLanguages
     }, 'tiktok');
 
     // Also set it in memory for immediate use
@@ -182,23 +185,9 @@ export class TikTokLiveSetup implements OnInit {
       username: this.username.trim(),
       profilePicture: this.profilePicture,
       isVerified: this.isVerified,
-      initialViewerCount: Math.floor(this.viewerCount)
+      initialViewerCount: Math.floor(this.viewerCount),
+      commentLanguages: this.selectedLanguages
     });
-
-    // Validate live stream start with backend (server-side enforcement)
-    if (this.authService.isAuthenticated()) {
-      try {
-        await this.authService.validateLiveStreamStart(
-          'tiktok',
-          Math.floor(this.viewerCount),
-          this.isVerified
-        );
-      } catch (error) {
-        console.error('Server validation failed:', error);
-        alert(this.authService.getErrorMessage(error));
-        return;
-      }
-    }
 
     // Track setup completion analytics
     this.analytics.trackSetupCompleted(

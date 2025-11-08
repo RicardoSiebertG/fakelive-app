@@ -5,24 +5,6 @@
       <div class="logo">
         <span class="logo-text">Fake<span class="live-badge">LIVE</span>.app</span>
       </div>
-      <div class="nav-actions">
-        @if (!authService.isAuthenticated()) {
-          <button class="nav-btn" (click)="openAuthDialog()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            Sign In
-          </button>
-        } @else {
-          <div class="user-menu">
-            <span class="user-name">{{ authService.getCurrentUser()?.name || authService.getCurrentUser()?.email }}</span>
-            <button class="nav-btn nav-btn-secondary" (click)="signOut()">
-              Sign Out
-            </button>
-          </div>
-        }
-      </div>
     </div>
   </nav>
 

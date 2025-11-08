@@ -70,12 +70,10 @@
           >
           <button
             type="button"
-            (click)="canUseVerified && (isVerified = !isVerified)"
+            (click)="isVerified = !isVerified"
             class="verified-icon"
             [class.verified-active]="isVerified"
-            [class.verified-disabled]="!canUseVerified"
-            [disabled]="!canUseVerified"
-            [title]="canUseVerified ? 'Toggle verified badge' : 'Verify your email to use verified badge'"
+            title="Toggle verified badge"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
               <polygon [attr.fill]="isVerified ? '#42a5f5' : '#D1D5DB'" points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884"/>
@@ -83,12 +81,12 @@
             </svg>
           </button>
         </div>
-        <p class="help-text">Lowercase letters, numbers, periods, and underscores only. Max 30 characters. @if (!canUseVerified) {<strong>Sign in FREE to enable verified badge.</strong> <button type="button" (click)="openAuthDialog()" class="inline-btn">Sign In</button>} @else {Tap the checkmark to add a verified badge.}</p>
+        <p class="help-text">Lowercase letters, numbers, periods, and underscores only. Max 30 characters. Tap the checkmark to add a verified badge.</p>
       </div>
 
       <!-- Viewer Count Section -->
       <div class="form-section">
-        <label class="section-label" for="viewerCount">Initial Viewer Count @if (!hasFullFeatures) {<span class="limit-badge">(Max: {{ maxViewerCount }})</span>}</label>
+        <label class="section-label" for="viewerCount">Initial Viewer Count</label>
         <input
           type="number"
           id="viewerCount"
@@ -96,10 +94,29 @@
           class="input-field"
           placeholder="e.g., 25000"
           min="0"
-          [max]="maxViewerCount"
+          max="999999"
           step="100"
         >
-        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream. @if (!hasFullFeatures) {<strong>Sign in FREE to increase limit.</strong> <button type="button" (click)="openAuthDialog()" class="inline-btn">Sign In</button>}</p>
+        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream.</p>
+      </div>
+
+      <!-- Comment Languages Section -->
+      <div class="form-section">
+        <label class="section-label">Comment Languages</label>
+        <div class="language-grid">
+          @for (lang of availableLanguages; track lang.code) {
+            <button
+              type="button"
+              (click)="toggleLanguage(lang.code)"
+              class="language-btn"
+              [class.language-selected]="isLanguageSelected(lang.code)"
+            >
+              <span class="language-flag">{{ lang.flag }}</span>
+              <span class="language-name">{{ lang.name }}</span>
+            </button>
+          }
+        </div>
+        <p class="help-text">Select one or more languages for comments. Comments will be randomly mixed from selected languages.</p>
       </div>
       </div>
 

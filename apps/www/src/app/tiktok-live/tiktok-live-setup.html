@@ -70,12 +70,10 @@
           >
           <button
             type="button"
-            (click)="canUseVerified && (isVerified = !isVerified)"
+            (click)="isVerified = !isVerified"
             class="verified-icon"
             [class.verified-active]="isVerified"
-            [class.verified-disabled]="!canUseVerified"
-            [disabled]="!canUseVerified"
-            [title]="canUseVerified ? 'Toggle verified badge' : 'Verify your email to use verified badge'"
+            title="Toggle verified badge"
           >
             <img
               [src]="isVerified ? '/assets/tiktok-verified.svg' : '/assets/tiktok-verified-gray.svg'"
@@ -86,12 +84,12 @@
             />
           </button>
         </div>
-        <p class="help-text">Letters, numbers, periods, and underscores only. Max 24 characters. @if (!canUseVerified) {<strong>Sign in FREE to enable verified badge.</strong> <button type="button" (click)="openAuthDialog()" class="inline-btn">Sign In</button>} @else {Tap the star to add a verified badge.}</p>
+        <p class="help-text">Letters, numbers, periods, and underscores only. Max 24 characters. Tap the star to add a verified badge.</p>
       </div>
 
       <!-- Viewer Count Section -->
       <div class="form-section">
-        <label class="section-label" for="viewerCount">Initial Viewer Count @if (!hasFullFeatures) {<span class="limit-badge">(Max: {{ maxViewerCount }})</span>}</label>
+        <label class="section-label" for="viewerCount">Initial Viewer Count</label>
         <input
           type="number"
           id="viewerCount"
@@ -99,10 +97,29 @@
           class="input-field"
           placeholder="e.g., 15000"
           min="0"
-          [max]="maxViewerCount"
+          max="999999"
           step="100"
         >
-        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream. @if (!hasFullFeatures) {<strong>Sign in FREE to increase limit.</strong> <button type="button" (click)="openAuthDialog()" class="inline-btn">Sign In</button>}</p>
+        <p class="help-text">The viewer count will fluctuate randomly by up to ±10% during the stream.</p>
+      </div>
+
+      <!-- Comment Languages Section -->
+      <div class="form-section">
+        <label class="section-label">Comment Languages</label>
+        <div class="language-grid">
+          @for (lang of availableLanguages; track lang.code) {
+            <button
+              type="button"
+              (click)="toggleLanguage(lang.code)"
+              class="language-btn"
+              [class.language-selected]="isLanguageSelected(lang.code)"
+            >
+              <span class="language-flag">{{ lang.flag }}</span>
+              <span class="language-name">{{ lang.name }}</span>
+            </button>
+          }
+        </div>
+        <p class="help-text">Select one or more languages for comments. Comments will be randomly mixed from selected languages.</p>
       </div>
       </div>
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
+import { CommentService } from '../services/comment.service';
 
 interface Comment {
   id: string;
@@ -132,55 +133,15 @@ export class TikTokLive implements OnInit, OnDestroy {
     { id: 60, username: 'winner', name: 'Winner' }
   ];
 
-  private sampleComments: string[] = [
-    'Love this! 💕',
-    'You\'re amazing! ✨',
-    'So talented! 🔥',
-    'This is incredible! 🤩',
-    'Keep going! 💪',
-    'Awesome content! 👏',
-    'Can\'t stop watching! 👀',
-    'You\'re the best! ⭐',
-    'This made my day! 😊',
-    'Sending love! ❤️',
-    'So inspiring! 🌟',
-    'Living for this! 🙌',
-    'Obsessed! 😍',
-    'Queen/King behavior! 👑',
-    'No one does it better! 💯',
-    'Iconic! 🎯',
-    'Period! 💅',
-    'Slay! 💃',
-    'You understood the assignment! 📝',
-    'Main character energy! ⚡',
-    'This is it! 🎪',
-    'Chef\'s kiss! 😘👌',
-    'Perfection! ✨',
-    'Teach me your ways! 🙏',
-    'I\'m screaming! 😱',
-    'Not me crying! 😭',
-    'I can\'t! 💀',
-    'Help! This is too good! 🆘',
-    'I\'m deceased! ⚰️',
-    'Rent free in my mind! 🏠',
-    'On repeat! 🔁',
-    'Save some talent for the rest of us! 🎭',
-    'The way I RAN here! 🏃',
-    'First! ☝️',
-    'Hi from Brazil! 🇧🇷',
-    'Greetings from India! 🇮🇳',
-    'Love from USA! 🇺🇸',
-    'Watching from UK! 🇬🇧',
-    'Yooo! 👋',
-    'Let\'s gooo! 🚀'
-  ];
+  private sampleComments: string[] = []; // Will be loaded from JSON files
 
   private streamStartTime = 0;
 
   constructor(
     private router: Router,
     private liveConfigService: LiveConfigService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private commentService: CommentService
   ) {}
 
   async ngOnInit() {
@@ -193,6 +154,25 @@ export class TikTokLive implements OnInit, OnDestroy {
       this.viewerCount = config.initialViewerCount || 15000;
       this.highestViewerCount = this.viewerCount;
       this.updateDisplayViewerCount();
+
+      // Load comments from selected languages
+      const selectedLanguages = config.commentLanguages || ['en-US'];
+      try {
+        const loadedData = await this.commentService.loadComments(selectedLanguages);
+        this.sampleComments = loadedData.comments;
+        // Note: usernames from JSON could be used here in the future
+        // For now we keep the hardcoded profiles array
+
+        if (this.sampleComments.length === 0) {
+          // Fallback to English US if no comments loaded
+          const fallbackData = await this.commentService.loadComments(['en-US']);
+          this.sampleComments = fallbackData.comments;
+        }
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+        // Use fallback comments if loading fails
+        this.sampleComments = ['Love this! 💕', 'Amazing! ✨', 'Keep going! 💪'];
+      }
     }
 
     // Check if mobile device

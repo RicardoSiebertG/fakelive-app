@@ -33,8 +33,8 @@ export class AuthService {
   public premiumStatus$: Observable<PremiumStatus | null> = this.premiumStatusSubject.asObservable();
 
   constructor() {
-    // Load session on initialization
-    this.loadSession();
+    // Load session on initialization - DISABLED since login is disabled
+    // this.loadSession();
   }
 
   /**

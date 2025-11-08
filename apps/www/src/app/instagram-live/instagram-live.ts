@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
+import { CommentService } from '../services/comment.service';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Profile {
@@ -141,16 +142,7 @@ export class InstagramLive implements OnInit, OnDestroy {
     {id: 60, username: "heavygoose401", name: "Rodney Peters"}
   ];
 
-  sampleComments = [
-    'Hi! 👋', 'Love this', 'Where are you?', 'Hey!!', 'Looking good!',
-    'What are you doing?', '❤️❤️❤️', 'Say hi!', 'Nice', 'Hello',
-    'Amazing', '🔥🔥', 'Cool!', 'Hi from NYC!', 'Love your content',
-    '😍😍', 'This is great', 'Can you see this?', 'Shoutout please!',
-    '💯', 'Wow!', 'This is awesome', 'Hey from LA!', '💕💕',
-    'You look great', 'What\'s up?', 'Love it', 'So cool', 'Nice stream',
-    'Hello there!', 'Greetings!', 'Awesome!', 'Beautiful', 'Perfect',
-    'Great stuff', '👏👏👏', 'Keep it up', '🙌', 'Yay!', 'Good vibes'
-  ];
+  sampleComments: string[] = []; // Will be loaded from JSON files
 
   gradients = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -165,7 +157,8 @@ export class InstagramLive implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private liveConfigService: LiveConfigService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private commentService: CommentService
   ) {}
 
   async ngOnInit() {
@@ -186,6 +179,25 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.isVerified = config.isVerified;
       this.initialViewerCount = config.initialViewerCount;
       this.userInitial = config.username.charAt(0).toUpperCase();
+
+      // Load comments from selected languages
+      const selectedLanguages = config.commentLanguages || ['en-US'];
+      try {
+        const loadedData = await this.commentService.loadComments(selectedLanguages);
+        this.sampleComments = loadedData.comments;
+        // Note: usernames from JSON could be used here in the future
+        // For now we keep the hardcoded profiles array
+
+        if (this.sampleComments.length === 0) {
+          // Fallback to English US if no comments loaded
+          const fallbackData = await this.commentService.loadComments(['en-US']);
+          this.sampleComments = fallbackData.comments;
+        }
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+        // Use fallback comments if loading fails
+        this.sampleComments = ['Hi! 👋', 'Love this', 'Amazing', '🔥🔥', 'Awesome!'];
+      }
     } catch (error) {
       // Fallback to memory config
       const config = this.liveConfigService.getConfig();
@@ -194,6 +206,20 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.isVerified = config.isVerified;
       this.initialViewerCount = config.initialViewerCount;
       this.userInitial = config.username.charAt(0).toUpperCase();
+
+      // Load comments from selected languages
+      const selectedLanguages = config.commentLanguages || ['en-US'];
+      try {
+        const loadedData = await this.commentService.loadComments(selectedLanguages);
+        this.sampleComments = loadedData.comments;
+        if (this.sampleComments.length === 0) {
+          const fallbackData = await this.commentService.loadComments(['en-US']);
+          this.sampleComments = fallbackData.comments;
+        }
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+        this.sampleComments = ['Hi! 👋', 'Love this', 'Amazing', '🔥🔥', 'Awesome!'];
+      }
     }
 
     await this.initCamera();

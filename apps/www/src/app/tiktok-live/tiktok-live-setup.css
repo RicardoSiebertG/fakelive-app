@@ -571,3 +571,65 @@
     max-width: none;
   }
 }
+
+/* Language Selection */
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.language-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.language-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.language-btn.language-selected {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.language-flag {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.language-name {
+  flex: 1;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .language-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .language-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .language-flag {
+    font-size: 18px;
+  }
+}

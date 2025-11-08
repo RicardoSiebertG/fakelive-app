@@ -6,6 +6,7 @@ export interface LiveConfig {
   profilePicture: string | null;
   isVerified: boolean;
   initialViewerCount: number;
+  commentLanguages?: string[]; // Language codes for comments (e.g., ['en', 'es'])
 }
 
 @Injectable({
@@ -17,7 +18,8 @@ export class LiveConfigService {
     username: 'your_username',
     profilePicture: null,
     isVerified: false,
-    initialViewerCount: 25000
+    initialViewerCount: 25000,
+    commentLanguages: ['en-US'] // Default to English (US)
   };
 
   constructor(private indexedDBService: IndexedDBService) {}
@@ -41,7 +43,8 @@ export class LiveConfigService {
           username: savedConfig.username,
           profilePicture: savedConfig.profilePicture,
           isVerified: savedConfig.isVerified,
-          initialViewerCount: savedConfig.initialViewerCount
+          initialViewerCount: savedConfig.initialViewerCount,
+          commentLanguages: savedConfig.commentLanguages || ['en']
         };
       } else {
         // Return default config for this platform
@@ -65,6 +68,7 @@ export class LiveConfigService {
       profilePicture: this.config.profilePicture,
       isVerified: this.config.isVerified,
       initialViewerCount: this.config.initialViewerCount,
+      commentLanguages: this.config.commentLanguages || ['en'],
       lastUsed: new Date()
     };
 
@@ -90,19 +94,22 @@ export class LiveConfigService {
         username: 'your_username',
         profilePicture: null,
         isVerified: false,
-        initialViewerCount: 25000
+        initialViewerCount: 25000,
+        commentLanguages: ['en-US']
       },
       tiktok: {
         username: 'your_username',
         profilePicture: null,
         isVerified: false,
-        initialViewerCount: 15000
+        initialViewerCount: 15000,
+        commentLanguages: ['en-US']
       },
       twitch: {
         username: 'your_username',
         profilePicture: null,
         isVerified: false,
-        initialViewerCount: 500
+        initialViewerCount: 500,
+        commentLanguages: ['en-US']
       }
     };
 
