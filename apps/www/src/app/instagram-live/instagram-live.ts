@@ -266,7 +266,7 @@ export class InstagramLive implements OnInit, OnDestroy {
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
-        audio: false
+        audio: true
       });
 
       this.currentStream = stream;
@@ -444,7 +444,7 @@ export class InstagramLive implements OnInit, OnDestroy {
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
-        audio: false
+        audio: true
       });
 
       this.currentStream = stream;
@@ -605,15 +605,16 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   private async startRecording() {
+    if (!this.currentStream) {
+      console.error('No camera stream available');
+      return;
+    }
+
     try {
-      await this.recordingService.startRecording('body');
+      await this.recordingService.startRecording(this.currentStream);
       console.log('Recording started');
     } catch (error) {
       console.error('Failed to start recording:', error);
-      // User likely cancelled the screen share dialog
-      if (error instanceof DOMException && error.name === 'NotAllowedError') {
-        console.log('User cancelled screen recording');
-      }
     }
   }
 
