@@ -195,6 +195,7 @@ export class TikTokLive implements OnInit, OnDestroy {
       const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
       if (videoElement) {
         videoElement.srcObject = this.currentStream;
+        videoElement.muted = true; // Ensure no audio feedback
       }
 
       // Enter fullscreen on mobile
@@ -387,6 +388,7 @@ export class TikTokLive implements OnInit, OnDestroy {
       const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
       if (videoElement) {
         videoElement.srcObject = this.currentStream;
+        videoElement.muted = true; // Ensure no audio feedback
       }
     } catch (error) {
       console.error('Error flipping camera:', error);

@@ -272,6 +272,7 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.currentStream = stream;
       if (this.cameraFeed) {
         this.cameraFeed.nativeElement.srcObject = stream;
+        this.cameraFeed.nativeElement.muted = true; // Ensure no audio feedback
       }
       this.loading = false;
 
@@ -450,6 +451,7 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.currentStream = stream;
       if (this.cameraFeed) {
         this.cameraFeed.nativeElement.srcObject = stream;
+        this.cameraFeed.nativeElement.muted = true; // Ensure no audio feedback
       }
     } catch (error) {
       console.error('Error flipping camera:', error);
