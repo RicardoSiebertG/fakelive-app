@@ -422,8 +422,8 @@ export class TikTokLive implements OnInit, OnDestroy {
 
   private async startRecording() {
     try {
-      await this.recordingService.startRecording();
-      console.log('Screen recording started - select the browser tab to record');
+      await this.recordingService.startRecording('.live-container');
+      console.log('Recording started');
     } catch (error) {
       console.error('Failed to start recording:', error);
       // User likely cancelled the screen share dialog
