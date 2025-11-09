@@ -25,11 +25,20 @@ export class RecordingService {
       return;
     }
 
-    // Create offscreen canvas
+    // Create offscreen canvas matching the displayed size
     this.canvas = document.createElement('canvas');
-    this.canvas.width = videoElement.videoWidth || 1280;
-    this.canvas.height = videoElement.videoHeight || 720;
+    const displayRect = videoElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    // Use display size for 1:1 pixel matching with what's shown on screen
+    this.canvas.width = displayRect.width * dpr;
+    this.canvas.height = displayRect.height * dpr;
     this.ctx = this.canvas.getContext('2d');
+
+    // Scale the context to account for device pixel ratio
+    if (this.ctx) {
+      this.ctx.scale(dpr, dpr);
+    }
 
     if (!this.ctx) {
       throw new Error('Could not get canvas context');
@@ -42,11 +51,15 @@ export class RecordingService {
     const drawFrame = () => {
       if (!this.ctx || !this.canvas) return;
 
-      // Clear canvas
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      // Get CSS pixel dimensions (canvas is scaled by DPR)
+      const cssWidth = displayRect.width;
+      const cssHeight = displayRect.height;
 
-      // Draw video
-      this.ctx.drawImage(videoElement, 0, 0, this.canvas.width, this.canvas.height);
+      // Clear canvas (using CSS pixel coordinates since context is scaled)
+      this.ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+      // Draw video (using CSS pixel coordinates)
+      this.ctx.drawImage(videoElement, 0, 0, cssWidth, cssHeight);
 
       // Draw overlays
       overlayElements.forEach(element => {
@@ -99,31 +112,38 @@ export class RecordingService {
     if (!this.ctx || !this.canvas) return;
 
     const rect = element.getBoundingClientRect();
-    const canvasRect = videoElement.getBoundingClientRect();
+    const videoRect = videoElement.getBoundingClientRect();
 
-    if (!canvasRect) return;
-
-    // Calculate scale factors
-    const scaleX = this.canvas.width / canvasRect.width;
-    const scaleY = this.canvas.height / canvasRect.height;
-
-    // Calculate position relative to video
-    const x = (rect.left - canvasRect.left) * scaleX;
-    const y = (rect.top - canvasRect.top) * scaleY;
-    const width = rect.width * scaleX;
-    const height = rect.height * scaleY;
+    // Calculate position relative to video (in CSS pixels since context is scaled)
+    const x = rect.left - videoRect.left;
+    const y = rect.top - videoRect.top;
+    const width = rect.width;
+    const height = rect.height;
 
     // Get computed styles
     const styles = window.getComputedStyle(element);
-    const fontSize = parseFloat(styles.fontSize) * scaleX;
+    const fontSize = parseFloat(styles.fontSize);
     const color = styles.color;
     const backgroundColor = styles.backgroundColor;
+    const borderRadius = styles.borderRadius;
     const textContent = element.textContent?.trim() || '';
 
-    // Draw background if exists
+    this.ctx.save();
+
+    // Draw background with border radius if exists
     if (backgroundColor && backgroundColor !== 'rgba(0, 0, 0, 0)') {
+      const radius = parseFloat(borderRadius) || 0;
+
       this.ctx.fillStyle = backgroundColor;
-      this.ctx.fillRect(x, y, width, height);
+
+      if (radius > 0) {
+        // Draw rounded rectangle
+        this.ctx.beginPath();
+        this.ctx.roundRect(x, y, width, height, radius);
+        this.ctx.fill();
+      } else {
+        this.ctx.fillRect(x, y, width, height);
+      }
     }
 
     // Draw text
@@ -131,15 +151,22 @@ export class RecordingService {
       this.ctx.fillStyle = color;
       this.ctx.font = `${fontSize}px ${styles.fontFamily}`;
       this.ctx.textBaseline = 'top';
-      this.ctx.fillText(textContent, x + 4, y + 4);
+
+      // Add some padding for text
+      const padding = 8;
+      this.ctx.fillText(textContent, x + padding, y + padding);
     }
+
+    this.ctx.restore();
   }
 
   private drawWatermark(text: string): void {
     if (!this.ctx || !this.canvas) return;
 
-    const centerX = this.canvas.width / 2;
-    const centerY = this.canvas.height / 2;
+    // Canvas is scaled by DPR, but context is also scaled, so use CSS pixel dimensions
+    const dpr = window.devicePixelRatio || 1;
+    const centerX = (this.canvas.width / dpr) / 2;
+    const centerY = (this.canvas.height / dpr) / 2;
 
     // Set watermark style
     this.ctx.save();
