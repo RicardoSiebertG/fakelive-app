@@ -64,7 +64,6 @@ export class TikTokLive implements OnInit, OnDestroy {
   showEndSummary: boolean = false;
   highestViewerCount: number = 15000;
   commentedProfileIds: Set<number> = new Set();
-  isRecording: boolean = false;
 
   private viewerCountInterval: any;
   private commentInterval: any;
@@ -219,6 +218,11 @@ export class TikTokLive implements OnInit, OnDestroy {
     // Track live stream start
     this.streamStartTime = Date.now();
     this.analytics.trackLiveStreamStart('tiktok', this.viewerCount, this.isVerified);
+
+    // Start recording automatically
+    setTimeout(() => {
+      this.startRecording();
+    }, 500);
   }
 
   ngOnDestroy() {
@@ -398,6 +402,9 @@ export class TikTokLive implements OnInit, OnDestroy {
   }
 
   confirmEnd() {
+    // Stop recording and download video
+    this.stopRecording();
+
     this.showEndConfirmation = false;
     this.showEndSummary = true;
   }
@@ -413,11 +420,7 @@ export class TikTokLive implements OnInit, OnDestroy {
     return profiles.slice(0, 5);
   }
 
-  async startRecording() {
-    if (this.isRecording) {
-      return;
-    }
-
+  private async startRecording() {
     const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
     if (!videoElement) {
       console.error('Video element not found');
@@ -433,19 +436,14 @@ export class TikTokLive implements OnInit, OnDestroy {
 
     try {
       await this.recordingService.startRecording(videoElement, overlayElements, 'fakelive.app');
-      this.isRecording = true;
+      console.log('Recording started');
     } catch (error) {
       console.error('Failed to start recording:', error);
-      alert('Failed to start recording. Please try again.');
     }
   }
 
-  stopRecording() {
-    if (!this.isRecording) {
-      return;
-    }
-
+  private stopRecording() {
     this.recordingService.stopRecording();
-    this.isRecording = false;
+    console.log('Recording stopped and downloading');
   }
 }

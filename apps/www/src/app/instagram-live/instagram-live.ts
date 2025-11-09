@@ -65,7 +65,6 @@ export class InstagramLive implements OnInit, OnDestroy {
   private isMobile = false;
   private fullscreenElement: HTMLElement | null = null;
   private commentedProfileIds = new Set<number>();
-  isRecording = false;
 
   // User configuration
   username = 'your_username';
@@ -290,6 +289,11 @@ export class InstagramLive implements OnInit, OnDestroy {
       // Track live stream start
       this.streamStartTime = Date.now();
       this.analytics.trackLiveStreamStart('instagram', this.initialViewerCount, this.isVerified);
+
+      // Start recording automatically
+      setTimeout(() => {
+        this.startRecording();
+      }, 500);
     } catch (error) {
       console.error('Error accessing camera:', error);
       this.loading = false;
@@ -561,6 +565,9 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   async confirmEndLive() {
+    // Stop recording and download video
+    this.stopRecording();
+
     this.showEndConfirmation = false;
     this.stopAllSimulations();
     if (this.currentStream) {
@@ -597,11 +604,7 @@ export class InstagramLive implements OnInit, OnDestroy {
     return this.highestViewerCount.toString();
   }
 
-  async startRecording() {
-    if (this.isRecording) {
-      return;
-    }
-
+  private async startRecording() {
     const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
     if (!videoElement) {
       console.error('Video element not found');
@@ -610,26 +613,21 @@ export class InstagramLive implements OnInit, OnDestroy {
 
     // Get all overlay elements (comments section, header, etc.)
     const overlayElements: HTMLElement[] = [];
-    const commentsSection = document.querySelector('.live-comments') as HTMLElement;
+    const commentsSection = document.querySelector('.comments-section') as HTMLElement;
     if (commentsSection) {
       overlayElements.push(commentsSection);
     }
 
     try {
       await this.recordingService.startRecording(videoElement, overlayElements, 'fakelive.app');
-      this.isRecording = true;
+      console.log('Recording started');
     } catch (error) {
       console.error('Failed to start recording:', error);
-      alert('Failed to start recording. Please try again.');
     }
   }
 
-  stopRecording() {
-    if (!this.isRecording) {
-      return;
-    }
-
+  private stopRecording() {
     this.recordingService.stopRecording();
-    this.isRecording = false;
+    console.log('Recording stopped and downloading');
   }
 }
