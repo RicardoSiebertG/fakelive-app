@@ -35,6 +35,9 @@ export class RecordingService {
       throw new Error('Could not get canvas context');
     }
 
+    // Set recording flag before starting the loop
+    this.isRecording = true;
+
     // Function to draw a single frame
     const drawFrame = () => {
       if (!this.ctx || !this.canvas) return;
@@ -47,7 +50,7 @@ export class RecordingService {
 
       // Draw overlays
       overlayElements.forEach(element => {
-        this.drawDOMElement(element);
+        this.drawDOMElement(element, videoElement);
       });
 
       // Draw watermark (centered, semi-transparent)
@@ -57,9 +60,6 @@ export class RecordingService {
         this.animationFrameId = requestAnimationFrame(drawFrame);
       }
     };
-
-    // Start drawing frames
-    drawFrame();
 
     // Capture canvas stream
     this.stream = this.canvas.captureStream(30); // 30 FPS
@@ -88,15 +88,18 @@ export class RecordingService {
       this.downloadRecording();
     };
 
-    this.mediaRecorder.start();
-    this.isRecording = true;
+    // Start recording with 1 second timeslice to get data chunks regularly
+    this.mediaRecorder.start(1000);
+
+    // Start drawing frames AFTER everything is set up
+    drawFrame();
   }
 
-  private drawDOMElement(element: HTMLElement): void {
+  private drawDOMElement(element: HTMLElement, videoElement: HTMLVideoElement): void {
     if (!this.ctx || !this.canvas) return;
 
     const rect = element.getBoundingClientRect();
-    const canvasRect = (document.getElementById('cameraFeed') as HTMLVideoElement)?.getBoundingClientRect();
+    const canvasRect = videoElement.getBoundingClientRect();
 
     if (!canvasRect) return;
 
