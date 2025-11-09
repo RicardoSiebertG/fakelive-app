@@ -39,12 +39,40 @@ export class LiveConfigService {
       const savedConfig = await this.indexedDBService.getPlatformConfig(platform);
 
       if (savedConfig) {
+        // Migrate old language codes to new format
+        let languages = savedConfig.commentLanguages || ['en-US'];
+        if (languages.length > 0) {
+          languages = languages.map(lang => {
+            // If it's an old format code (2 letters), convert to new format
+            if (lang.length === 2) {
+              const migrations: Record<string, string> = {
+                'en': 'en-US',
+                'es': 'es-MX',
+                'pt': 'pt-BR',
+                'fr': 'fr-FR',
+                'de': 'de-DE',
+                'it': 'it-IT',
+                'ar': 'ar-EG',
+                'hi': 'hi-IN',
+                'ur': 'ur-PK',
+                'ja': 'ja-JP',
+                'ko': 'ko-KR',
+                'id': 'id-ID',
+                'tl': 'tl-PH',
+                'tr': 'tr-TR'
+              };
+              return migrations[lang] || 'en-US';
+            }
+            return lang;
+          });
+        }
+
         this.config = {
           username: savedConfig.username,
           profilePicture: savedConfig.profilePicture,
           isVerified: savedConfig.isVerified,
           initialViewerCount: savedConfig.initialViewerCount,
-          commentLanguages: savedConfig.commentLanguages || ['en']
+          commentLanguages: languages
         };
       } else {
         // Return default config for this platform
@@ -68,7 +96,7 @@ export class LiveConfigService {
       profilePicture: this.config.profilePicture,
       isVerified: this.config.isVerified,
       initialViewerCount: this.config.initialViewerCount,
-      commentLanguages: this.config.commentLanguages || ['en'],
+      commentLanguages: this.config.commentLanguages || ['en-US'],
       lastUsed: new Date()
     };
 

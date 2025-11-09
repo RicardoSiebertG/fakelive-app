@@ -605,7 +605,7 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   private async startRecording() {
-    const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
+    const videoElement = document.getElementById('camera-feed') as HTMLVideoElement;
     if (!videoElement) {
       console.error('Video element not found');
       return;
