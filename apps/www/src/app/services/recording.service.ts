@@ -17,8 +17,7 @@ export class RecordingService {
 
   async startRecording(
     videoElement: HTMLVideoElement,
-    overlayElements: HTMLElement[],
-    watermarkText: string = 'fakelive.app'
+    overlayElements: HTMLElement[]
   ): Promise<void> {
     if (this.isRecording) {
       console.warn('Already recording');
@@ -65,9 +64,6 @@ export class RecordingService {
       overlayElements.forEach(element => {
         this.drawDOMElement(element, videoElement);
       });
-
-      // Draw watermark (centered, semi-transparent)
-      this.drawWatermark(watermarkText);
 
       if (this.isRecording) {
         this.animationFrameId = requestAnimationFrame(drawFrame);
@@ -156,31 +152,6 @@ export class RecordingService {
       const padding = 8;
       this.ctx.fillText(textContent, x + padding, y + padding);
     }
-
-    this.ctx.restore();
-  }
-
-  private drawWatermark(text: string): void {
-    if (!this.ctx || !this.canvas) return;
-
-    // Canvas is scaled by DPR, but context is also scaled, so use CSS pixel dimensions
-    const dpr = window.devicePixelRatio || 1;
-    const centerX = (this.canvas.width / dpr) / 2;
-    const centerY = (this.canvas.height / dpr) / 2;
-
-    // Set watermark style
-    this.ctx.save();
-    this.ctx.globalAlpha = 0.3; // Semi-transparent
-    this.ctx.fillStyle = '#FFFFFF';
-    this.ctx.strokeStyle = '#000000';
-    this.ctx.lineWidth = 2;
-    this.ctx.font = 'bold 48px Arial, sans-serif';
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-
-    // Draw text with stroke (outline) for better visibility
-    this.ctx.strokeText(text, centerX, centerY);
-    this.ctx.fillText(text, centerX, centerY);
 
     this.ctx.restore();
   }

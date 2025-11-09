@@ -435,7 +435,7 @@ export class TikTokLive implements OnInit, OnDestroy {
     }
 
     try {
-      await this.recordingService.startRecording(videoElement, overlayElements, 'fakelive.app');
+      await this.recordingService.startRecording(videoElement, overlayElements);
       console.log('Recording started');
     } catch (error) {
       console.error('Failed to start recording:', error);
