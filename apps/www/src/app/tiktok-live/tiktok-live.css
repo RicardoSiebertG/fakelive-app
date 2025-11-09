@@ -291,6 +291,20 @@
   background: linear-gradient(135deg, #FE2C55 0%, #FF1744 100%);
 }
 
+.control-button.recording {
+  background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+  animation: recordingPulse 2s ease-in-out infinite;
+}
+
+@keyframes recordingPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 0, 0, 0);
+  }
+}
+
 /* Bottom Bar */
 .bottom-bar {
   position: absolute;

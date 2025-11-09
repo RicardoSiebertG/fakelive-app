@@ -82,6 +82,17 @@
       <path d="M5,11.333V12.434C5.193,14.074 6.013,15.588 7.304,16.688C8.596,17.788 10.267,18.396 12,18.396C13.733,18.396 15.404,17.788 16.695,16.688C17.987,15.588 18.807,14.074 19,12.434V11.333"/>
     </svg>
   </button>
+  <button class="control-icon" (click)="isRecording ? stopRecording() : startRecording()" [class.recording]="isRecording" [title]="isRecording ? 'Stop Recording' : 'Start Recording'">
+    @if (isRecording) {
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <rect x="6" y="6" width="12" height="12" rx="2"/>
+      </svg>
+    } @else {
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <circle cx="12" cy="12" r="10"/>
+      </svg>
+    }
+  </button>
   <button class="control-icon" (click)="toggleCamera()" title="Toggle Camera">
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M17.482,9.12L21.999,7.2V17.44L17.482,15.52"/>

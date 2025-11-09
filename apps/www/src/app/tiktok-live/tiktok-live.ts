@@ -6,6 +6,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
 import { CommentService } from '../services/comment.service';
+import { RecordingService } from '../services/recording.service';
 
 interface Comment {
   id: string;
@@ -63,6 +64,7 @@ export class TikTokLive implements OnInit, OnDestroy {
   showEndSummary: boolean = false;
   highestViewerCount: number = 15000;
   commentedProfileIds: Set<number> = new Set();
+  isRecording: boolean = false;
 
   private viewerCountInterval: any;
   private commentInterval: any;
@@ -141,7 +143,8 @@ export class TikTokLive implements OnInit, OnDestroy {
     private router: Router,
     private liveConfigService: LiveConfigService,
     private analytics: AnalyticsService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private recordingService: RecordingService
   ) {}
 
   async ngOnInit() {
@@ -408,5 +411,41 @@ export class TikTokLive implements OnInit, OnDestroy {
       .map(id => this.profiles.find(p => p.id === id))
       .filter(p => p !== undefined) as Profile[];
     return profiles.slice(0, 5);
+  }
+
+  async startRecording() {
+    if (this.isRecording) {
+      return;
+    }
+
+    const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
+    if (!videoElement) {
+      console.error('Video element not found');
+      return;
+    }
+
+    // Get all overlay elements (comments section, header, etc.)
+    const overlayElements: HTMLElement[] = [];
+    const commentsSection = document.querySelector('.comments-section') as HTMLElement;
+    if (commentsSection) {
+      overlayElements.push(commentsSection);
+    }
+
+    try {
+      await this.recordingService.startRecording(videoElement, overlayElements, 'fakelive.app');
+      this.isRecording = true;
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      alert('Failed to start recording. Please try again.');
+    }
+  }
+
+  stopRecording() {
+    if (!this.isRecording) {
+      return;
+    }
+
+    this.recordingService.stopRecording();
+    this.isRecording = false;
   }
 }

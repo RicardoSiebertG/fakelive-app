@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
 import { CommentService } from '../services/comment.service';
+import { RecordingService } from '../services/recording.service';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Profile {
@@ -64,6 +65,7 @@ export class InstagramLive implements OnInit, OnDestroy {
   private isMobile = false;
   private fullscreenElement: HTMLElement | null = null;
   private commentedProfileIds = new Set<number>();
+  isRecording = false;
 
   // User configuration
   username = 'your_username';
@@ -158,7 +160,8 @@ export class InstagramLive implements OnInit, OnDestroy {
     private router: Router,
     private liveConfigService: LiveConfigService,
     private analytics: AnalyticsService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private recordingService: RecordingService
   ) {}
 
   async ngOnInit() {
@@ -592,5 +595,41 @@ export class InstagramLive implements OnInit, OnDestroy {
       return thousands.toFixed(1) + 'K';
     }
     return this.highestViewerCount.toString();
+  }
+
+  async startRecording() {
+    if (this.isRecording) {
+      return;
+    }
+
+    const videoElement = document.getElementById('cameraFeed') as HTMLVideoElement;
+    if (!videoElement) {
+      console.error('Video element not found');
+      return;
+    }
+
+    // Get all overlay elements (comments section, header, etc.)
+    const overlayElements: HTMLElement[] = [];
+    const commentsSection = document.querySelector('.live-comments') as HTMLElement;
+    if (commentsSection) {
+      overlayElements.push(commentsSection);
+    }
+
+    try {
+      await this.recordingService.startRecording(videoElement, overlayElements, 'fakelive.app');
+      this.isRecording = true;
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      alert('Failed to start recording. Please try again.');
+    }
+  }
+
+  stopRecording() {
+    if (!this.isRecording) {
+      return;
+    }
+
+    this.recordingService.stopRecording();
+    this.isRecording = false;
   }
 }
