@@ -605,24 +605,15 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   private async startRecording() {
-    const videoElement = document.getElementById('camera-feed') as HTMLVideoElement;
-    if (!videoElement) {
-      console.error('Video element not found');
-      return;
-    }
-
-    // Get all overlay elements (comments section, header, etc.)
-    const overlayElements: HTMLElement[] = [];
-    const commentsSection = document.querySelector('.comments-section') as HTMLElement;
-    if (commentsSection) {
-      overlayElements.push(commentsSection);
-    }
-
     try {
-      await this.recordingService.startRecording(videoElement, overlayElements);
-      console.log('Recording started');
+      await this.recordingService.startRecording();
+      console.log('Screen recording started - select the browser tab to record');
     } catch (error) {
       console.error('Failed to start recording:', error);
+      // User likely cancelled the screen share dialog
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        console.log('User cancelled screen recording');
+      }
     }
   }
 
