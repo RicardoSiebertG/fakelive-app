@@ -170,8 +170,10 @@ export class RecordingService {
       this.animationFrameId = null;
     }
 
-    // Stop MediaRecorder
+    // Stop MediaRecorder (but don't download yet)
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      // Remove the onstop handler to prevent auto-download
+      this.mediaRecorder.onstop = null;
       this.mediaRecorder.stop();
     }
 
@@ -180,9 +182,11 @@ export class RecordingService {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
+
+    console.log('Recording stopped - ready to save');
   }
 
-  private downloadRecording(): void {
+  downloadRecording(): void {
     const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

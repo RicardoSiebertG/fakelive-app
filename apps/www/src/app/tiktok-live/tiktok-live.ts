@@ -444,6 +444,10 @@ export class TikTokLive implements OnInit, OnDestroy {
 
   private stopRecording() {
     this.recordingService.stopRecording();
-    console.log('Recording stopped and downloading');
+    console.log('Recording stopped - ready to save');
+  }
+
+  saveVideo() {
+    this.recordingService.downloadRecording();
   }
 }
