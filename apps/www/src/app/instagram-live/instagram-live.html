@@ -177,8 +177,22 @@
       </div>
     </div>
     <div class="end-summary-button-container">
-      <button class="end-summary-save-btn" (click)="saveVideo()">Save Video</button>
       <button class="end-summary-done-btn" (click)="dismissEndSummary()">Done</button>
+    </div>
+  </div>
+}
+
+<!-- Recording Reminder Modal -->
+@if (showRecordingReminder) {
+  <div class="modal-backdrop" (click)="dismissRecordingReminder()" style="z-index: 10000;">
+    <div class="modal-content" (click)="$event.stopPropagation()" style="background: white; border-radius: 16px; padding: 24px; max-width: 400px; text-align: center;">
+      <h2 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 600;">📹 Record Your Live</h2>
+      <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Start your phone's screen recording now to save this live stream!</p>
+      <div style="margin: 16px 0; padding: 16px; background: #f5f5f5; border-radius: 8px; text-align: left;">
+        <p style="margin: 0 0 8px 0; font-size: 13px;"><strong>iOS:</strong> Swipe down from top-right, tap the record button</p>
+        <p style="margin: 0; font-size: 13px;"><strong>Android:</strong> Swipe down, tap Screen Record</p>
+      </div>
+      <button (click)="dismissRecordingReminder()" style="width: 100%; padding: 12px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">Got it!</button>
     </div>
   </div>
 }

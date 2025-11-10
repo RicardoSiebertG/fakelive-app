@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
 import { CommentService } from '../services/comment.service';
-import { RecordingService } from '../services/recording.service';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 interface Profile {
@@ -57,6 +56,7 @@ export class InstagramLive implements OnInit, OnDestroy {
   audioEnabled = true;
   showEndConfirmation = false;
   showEndSummary = false;
+  showRecordingReminder = false;
   highestViewerCount = 0;
   summaryViewerProfiles: number[] = [];
   comments: Array<{ id: number; username: string; text: string; profileId?: number; initial: string; gradient: string }> = [];
@@ -159,8 +159,7 @@ export class InstagramLive implements OnInit, OnDestroy {
     private router: Router,
     private liveConfigService: LiveConfigService,
     private analytics: AnalyticsService,
-    private commentService: CommentService,
-    private recordingService: RecordingService
+    private commentService: CommentService
   ) {}
 
   async ngOnInit() {
@@ -291,10 +290,10 @@ export class InstagramLive implements OnInit, OnDestroy {
       this.streamStartTime = Date.now();
       this.analytics.trackLiveStreamStart('instagram', this.initialViewerCount, this.isVerified);
 
-      // Start recording automatically
+      // Show recording reminder dialog after a short delay
       setTimeout(() => {
-        this.startRecording();
-      }, 500);
+        this.showRecordingReminder = true;
+      }, 1000);
     } catch (error) {
       console.error('Error accessing camera:', error);
       this.loading = false;
@@ -567,9 +566,6 @@ export class InstagramLive implements OnInit, OnDestroy {
   }
 
   async confirmEndLive() {
-    // Stop recording and download video
-    this.stopRecording();
-
     this.showEndConfirmation = false;
     this.stopAllSimulations();
     if (this.currentStream) {
@@ -606,26 +602,7 @@ export class InstagramLive implements OnInit, OnDestroy {
     return this.highestViewerCount.toString();
   }
 
-  private async startRecording() {
-    if (!this.currentStream) {
-      console.error('No camera stream available');
-      return;
-    }
-
-    try {
-      await this.recordingService.startRecording(this.currentStream);
-      console.log('Recording started');
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-    }
-  }
-
-  private stopRecording() {
-    this.recordingService.stopRecording();
-    console.log('Recording stopped - ready to save');
-  }
-
-  saveVideo() {
-    this.recordingService.downloadRecording();
+  dismissRecordingReminder() {
+    this.showRecordingReminder = false;
   }
 }

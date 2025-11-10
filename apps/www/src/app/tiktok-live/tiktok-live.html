@@ -199,8 +199,22 @@
             }
           </div>
         </div>
-        <button class="save-video-button" (click)="saveVideo()">Save Video</button>
         <button class="done-button" (click)="goHome()">Done</button>
+      </div>
+    </div>
+  }
+
+  <!-- Recording Reminder Modal -->
+  @if (showRecordingReminder) {
+    <div class="modal-backdrop" (click)="dismissRecordingReminder()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>📹 Record Your Live</h2>
+        <p>Start your phone's screen recording now to save this live stream!</p>
+        <div class="recording-instructions">
+          <p><strong>iOS:</strong> Swipe down from top-right, tap the record button</p>
+          <p><strong>Android:</strong> Swipe down, tap Screen Record</p>
+        </div>
+        <button class="confirm-button" (click)="dismissRecordingReminder()">Got it!</button>
       </div>
     </div>
   }

@@ -6,7 +6,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { LiveConfigService } from '../services/live-config.service';
 import { AnalyticsService } from '../services/analytics.service';
 import { CommentService } from '../services/comment.service';
-import { RecordingService } from '../services/recording.service';
 
 interface Comment {
   id: string;
@@ -62,6 +61,7 @@ export class TikTokLive implements OnInit, OnDestroy {
   audioEnabled: boolean = false;
   showEndConfirmation: boolean = false;
   showEndSummary: boolean = false;
+  showRecordingReminder: boolean = false;
   highestViewerCount: number = 15000;
   commentedProfileIds: Set<number> = new Set();
 
@@ -142,8 +142,7 @@ export class TikTokLive implements OnInit, OnDestroy {
     private router: Router,
     private liveConfigService: LiveConfigService,
     private analytics: AnalyticsService,
-    private commentService: CommentService,
-    private recordingService: RecordingService
+    private commentService: CommentService
   ) {}
 
   async ngOnInit() {
@@ -220,10 +219,10 @@ export class TikTokLive implements OnInit, OnDestroy {
     this.streamStartTime = Date.now();
     this.analytics.trackLiveStreamStart('tiktok', this.viewerCount, this.isVerified);
 
-    // Start recording automatically
+    // Show recording reminder dialog after a short delay
     setTimeout(() => {
-      this.startRecording();
-    }, 500);
+      this.showRecordingReminder = true;
+    }, 1000);
   }
 
   ngOnDestroy() {
@@ -404,9 +403,6 @@ export class TikTokLive implements OnInit, OnDestroy {
   }
 
   confirmEnd() {
-    // Stop recording and download video
-    this.stopRecording();
-
     this.showEndConfirmation = false;
     this.showEndSummary = true;
   }
@@ -422,26 +418,7 @@ export class TikTokLive implements OnInit, OnDestroy {
     return profiles.slice(0, 5);
   }
 
-  private async startRecording() {
-    if (!this.currentStream) {
-      console.error('No camera stream available');
-      return;
-    }
-
-    try {
-      await this.recordingService.startRecording(this.currentStream);
-      console.log('Recording started');
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-    }
-  }
-
-  private stopRecording() {
-    this.recordingService.stopRecording();
-    console.log('Recording stopped - ready to save');
-  }
-
-  saveVideo() {
-    this.recordingService.downloadRecording();
+  dismissRecordingReminder() {
+    this.showRecordingReminder = false;
   }
 }
